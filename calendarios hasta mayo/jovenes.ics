@@ -1,0 +1,95 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//iglesia_jovenes//Planificacion 2026//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Ministerio de Jóvenes - Iglesia
+X-WR-TIMEZONE:America/Havana
+BEGIN:VTIMEZONE
+TZID:America/Havana
+X-LIC-LOCATION:America/Havana
+BEGIN:STANDARD
+DTSTART:20241103T010000
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+TZNAME:CST
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20250309T000000
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+TZNAME:CDT
+END:DAYLIGHT
+END:VTIMEZONE
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260213T150000
+DTEND;TZID=America/Havana:20260213T190000
+SUMMARY:Picnic de Jóvenes
+DESCRIPTION:Convivencia y picnic en la finca "Sola 1".
+LOCATION:Finca Sola 1
+SEQUENCE:0
+UID:jovenes_picnic_feb@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260221T100000
+DTEND;TZID=America/Havana:20260221T140000
+SUMMARY:Jóvenes: Visitación y Evangelismo
+DESCRIPTION:Tiempo dedicado a la visitación y a compartir el evangelio.
+LOCATION:Diversos lugares
+SEQUENCE:0
+UID:jovenes_visitas_feb@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260316T160000
+DTEND;TZID=America/Havana:20260316T200000
+SUMMARY:Evento Alcance: Jóvenes
+DESCRIPTION:Compartir el evangelio con personas vulnerables y ofrecer una caldosa.
+LOCATION:Por definir
+SEQUENCE:0
+UID:jovenes_alcance_mar@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260413T100000
+DTEND;TZID=America/Havana:20260413T140000
+SUMMARY:Confraternización Jóvenes
+DESCRIPTION:Solteros y matrimonios se reúnen por separado para compartir un café o almuerzo.
+LOCATION:Diversos lugares
+SEQUENCE:0
+UID:jovenes_confrater_abr@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260417T160000
+DTEND;TZID=America/Havana:20260417T200000
+SUMMARY:Células de Oración
+DESCRIPTION:Células de oración en las casas. Compartir el evangelio y una merienda.
+LOCATION:Hogares de los miembros
+SEQUENCE:0
+UID:jovenes_celulas_abr@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260523T100000
+DTEND;TZID=America/Havana:20260523T140000
+SUMMARY:Jóvenes: Visitación y Evangelismo
+DESCRIPTION:Tiempo dedicado a la visitación y a compartir el evangelio.
+LOCATION:Diversos lugares
+SEQUENCE:0
+UID:jovenes_visitas_may@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260531T100000
+DTEND;TZID=America/Havana:20260531T140000
+SUMMARY:Venta de Talentos - Jóvenes
+DESCRIPTION:Venta de dulces para aumentar el fondo del ministerio juvenil.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:jovenes_venta_may@iglesia.local
+END:VEVENT
+
+END:VCALENDAR

@@ -1,0 +1,313 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//iglesia_damas//Planificacion 2026//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Ministerio de Damas - Iglesia
+X-WR-TIMEZONE:America/Havana
+BEGIN:VTIMEZONE
+TZID:America/Havana
+X-LIC-LOCATION:America/Havana
+BEGIN:STANDARD
+DTSTART:20241103T010000
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+TZNAME:CST
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20250309T000000
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+TZNAME:CDT
+END:DAYLIGHT
+END:VTIMEZONE
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260202T150000
+DTEND;TZID=America/Havana:20260202T160000
+RRULE:FREQ=WEEKLY;BYDAY=MO;UNTIL=20260223T235959
+SUMMARY:Oración Madres y Esposas
+DESCRIPTION:Oración: Madres clamando por hijos y esposas por esposos.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_lunes_feb_01@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260302T150000
+DTEND;TZID=America/Havana:20260302T160000
+RRULE:FREQ=WEEKLY;BYDAY=MO;UNTIL=20260330T235959
+SUMMARY:Oración Madres y Esposas
+DESCRIPTION:Oración: Madres clamando por hijos y esposas por esposos.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_lunes_mar_01@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260406T150000
+DTEND;TZID=America/Havana:20260406T160000
+RRULE:FREQ=WEEKLY;BYDAY=MO;UNTIL=20260427T235959
+SUMMARY:Oración Madres y Esposas
+DESCRIPTION:Oración: Madres clamando por hijos y esposas por esposos.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_lunes_abr_01@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260504T150000
+DTEND;TZID=America/Havana:20260504T160000
+RRULE:FREQ=WEEKLY;BYDAY=MO;UNTIL=20260525T235959
+SUMMARY:Oración Madres y Esposas
+DESCRIPTION:Oración: Madres clamando por hijos y esposas por esposos.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_lunes_may_01@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260204T160000
+DTEND;TZID=America/Havana:20260204T180000
+RRULE:FREQ=WEEKLY;BYDAY=WE;UNTIL=20260225T235959
+SUMMARY:Visitación por Dúos
+DESCRIPTION:Ministerio de Damas - Visitación semanal.
+LOCATION:Diversos lugares
+SEQUENCE:0
+UID:damas_miercoles_feb_01@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260304T160000
+DTEND;TZID=America/Havana:20260304T180000
+RRULE:FREQ=WEEKLY;BYDAY=WE;UNTIL=20260325T235959
+SUMMARY:Visitación por Dúos
+DESCRIPTION:Ministerio de Damas - Visitación semanal.
+LOCATION:Diversos lugares
+SEQUENCE:0
+UID:damas_miercoles_mar_01@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260401T160000
+DTEND;TZID=America/Havana:20260401T180000
+RRULE:FREQ=WEEKLY;BYDAY=WE;UNTIL=20260429T235959
+SUMMARY:Visitación por Dúos
+DESCRIPTION:Ministerio de Damas - Visitación semanal.
+LOCATION:Diversos lugares
+SEQUENCE:0
+UID:damas_miercoles_abr_01@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260506T160000
+DTEND;TZID=America/Havana:20260506T180000
+RRULE:FREQ=WEEKLY;BYDAY=WE;UNTIL=20260527T235959
+SUMMARY:Visitación por Dúos
+DESCRIPTION:Ministerio de Damas - Visitación semanal.
+LOCATION:Diversos lugares
+SEQUENCE:0
+UID:damas_miercoles_may_01@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260207T100000
+DTEND;TZID=America/Havana:20260207T120000
+SUMMARY:Sábado de Damas - Grupo 1
+DESCRIPTION:Tema y Devocional a cargo del Grupo 1 (Yolexis).\nAyuno durante la semana previa.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_sab_g1_feb@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260214T100000
+DTEND;TZID=America/Havana:20260214T120000
+SUMMARY:Sábado de Damas - Grupo 2
+DESCRIPTION:Tema y Devocional a cargo del Grupo 2 (Norma).\nAyuno durante la semana previa.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_sab_g2_feb@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260221T100000
+DTEND;TZID=America/Havana:20260221T120000
+SUMMARY:Sábado de Damas - Grupo 3
+DESCRIPTION:Tema y Devocional a cargo del Grupo 3 (Anabel).\nAyuno durante la semana previa.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_sab_g3_feb@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260228T100000
+DTEND;TZID=America/Havana:20260228T120000
+SUMMARY:Sábado de Damas - Grupo 4
+DESCRIPTION:Tema y Devocional a cargo del Grupo 4 (Yuli).\nAyuno durante la semana previa.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_sab_g4_feb@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260227T220000
+DTEND;TZID=America/Havana:20260228T020000
+SUMMARY:Vigilia de Damas - Febrero
+DESCRIPTION:Tercer viernes del mes. Vigilia de oración.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_vigilia_feb@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260307T100000
+DTEND;TZID=America/Havana:20260307T120000
+SUMMARY:Sábado de Damas - Grupo 1
+DESCRIPTION:Tema y Devocional a cargo del Grupo 1 (Yolexis).\nAyuno durante la semana previa.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_sab_g1_mar@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260314T100000
+DTEND;TZID=America/Havana:20260314T120000
+SUMMARY:Sábado de Damas - Grupo 2
+DESCRIPTION:Tema y Devocional a cargo del Grupo 2 (Norma).\nAyuno durante la semana previa.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_sab_g2_mar@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260321T100000
+DTEND;TZID=America/Havana:20260321T120000
+SUMMARY:Sábado de Damas - Grupo 3
+DESCRIPTION:Tema y Devocional a cargo del Grupo 3 (Anabel).\nAyuno durante la semana previa.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_sab_g3_mar@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260328T100000
+DTEND;TZID=America/Havana:20260328T120000
+SUMMARY:Sábado de Damas - Grupo 4
+DESCRIPTION:Tema y Devocional a cargo del Grupo 4 (Yuli).\nAyuno durante la semana previa.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_sab_g4_mar@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260404T100000
+DTEND;TZID=America/Havana:20260404T120000
+SUMMARY:Sábado de Damas - Grupo 1
+DESCRIPTION:Tema y Devocional a cargo del Grupo 1 (Yolexis).\nAyuno durante la semana previa.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_sab_g1_abr@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260411T100000
+DTEND;TZID=America/Havana:20260411T120000
+SUMMARY:Sábado de Damas - Grupo 2
+DESCRIPTION:Tema y Devocional a cargo del Grupo 2 (Norma).\nAyuno durante la semana previa.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_sab_g2_abr@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260418T100000
+DTEND;TZID=America/Havana:20260418T120000
+SUMMARY:Sábado de Damas - Grupo 3
+DESCRIPTION:Tema y Devocional a cargo del Grupo 3 (Anabel).\nAyuno durante la semana previa.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_sab_g3_abr@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260425T100000
+DTEND;TZID=America/Havana:20260425T120000
+SUMMARY:Sábado de Damas - Grupo 4
+DESCRIPTION:Tema y Devocional a cargo del Grupo 4 (Yuli).\nAyuno durante la semana previa.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_sab_g4_abr@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260424T220000
+DTEND;TZID=America/Havana:20260425T020000
+SUMMARY:Vigilia de Damas - Abril
+DESCRIPTION:Tercer viernes del mes. Vigilia de oración.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_vigilia_abr@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260502T100000
+DTEND;TZID=America/Havana:20260502T120000
+SUMMARY:Sábado de Damas - Grupo 1
+DESCRIPTION:Tema y Devocional a cargo del Grupo 1 (Yolexis).\nAyuno durante la semana previa.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_sab_g1_may@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260509T100000
+DTEND;TZID=America/Havana:20260509T120000
+SUMMARY:Sábado de Damas - Grupo 2
+DESCRIPTION:Tema y Devocional a cargo del Grupo 2 (Norma).\nAyuno durante la semana previa.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_sab_g2_may@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260516T100000
+DTEND;TZID=America/Havana:20260516T120000
+SUMMARY:Sábado de Damas - Grupo 2
+DESCRIPTION:Intercambio de púlpito con la iglesia filial.
+LOCATION:Iglesia Filial
+SEQUENCE:0
+UID:damas_intercambio_may@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260523T100000
+DTEND;TZID=America/Havana:20260523T120000
+SUMMARY:Sábado de Damas - Grupo 3
+DESCRIPTION:Tema y Devocional a cargo del Grupo 3 (Anabel).\nAyuno durante la semana previa.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_sab_g3_may@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260530T100000
+DTEND;TZID=America/Havana:20260530T120000
+SUMMARY:Sábado de Damas - Grupo 4
+DESCRIPTION:Tema y Devocional a cargo del Grupo 4 (Yuli).\nAyuno durante la semana previa.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_sab_g4_may@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260529T220000
+DTEND;TZID=America/Havana:20260530T020000
+SUMMARY:Vigilia de Damas - Mayo
+DESCRIPTION:Tercer viernes del mes. Vigilia de oración.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:damas_vigilia_may@iglesia.local
+END:VEVENT
+
+END:VCALENDAR

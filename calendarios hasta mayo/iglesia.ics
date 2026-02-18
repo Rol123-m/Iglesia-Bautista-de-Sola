@@ -1,0 +1,197 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//iglesia_general//Planificacion 2026//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Actividades Generales - Iglesia
+X-WR-TIMEZONE:America/Havana
+BEGIN:VTIMEZONE
+TZID:America/Havana
+X-LIC-LOCATION:America/Havana
+BEGIN:STANDARD
+DTSTART:20241103T010000
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+TZNAME:CST
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20250309T000000
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+TZNAME:CDT
+END:DAYLIGHT
+END:VTIMEZONE
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260205T200000
+DTEND;TZID=America/Havana:20260205T213000
+RRULE:FREQ=WEEKLY;BYDAY=TH;UNTIL=20260226T235959
+SUMMARY:Enseñanza Jueves - Principios Bautistas
+DESCRIPTION:El Pastor enseña sobre "Los Principios Bautistas".
+LOCATION:Iglesia
+SEQUENCE:0
+UID:iglesia_jueves_feb@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260222T100000
+DTEND;TZID=America/Havana:20260222T120000
+SUMMARY:Escuela Bíblica - Presentación
+DESCRIPTION:Presentación de los niños y oración por los cumpleañeros del mes.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:iglesia_escuela_feb@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260307T080000
+DTEND;TZID=America/Havana:20260307T120000
+SUMMARY:Ayuno y Oración
+DESCRIPTION:Ayuno y oración por la evangelización y la campaña. Toda la iglesia unida.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:iglesia_ayuno_mar@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260305T200000
+DTEND;TZID=America/Havana:20260305T213000
+RRULE:FREQ=WEEKLY;BYDAY=TH;UNTIL=20260326T235959
+SUMMARY:Taller para Misioneros
+DESCRIPTION:Enseñanza del Pastor: "Cómo hacer discípulos" (evangelizar).
+LOCATION:Iglesia
+SEQUENCE:0
+UID:iglesia_taller_mar@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260320T210000
+DTEND;TZID=America/Havana:20260321T010000
+SUMMARY:Reloj de Oración
+DESCRIPTION:Noche de oración dirigida por la Pastora.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:iglesia_reloj_mar@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260322T100000
+DTEND;TZID=America/Havana:20260322T130000
+SUMMARY:Campaña Evangelística
+DESCRIPTION:Día especial de campaña evangelística.
+LOCATION:Iglesia / Exterior
+SEQUENCE:0
+UID:iglesia_campana_mar@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260329T100000
+DTEND;TZID=America/Havana:20260329T120000
+SUMMARY:Inicio Semana de Pasión
+DESCRIPTION:Domingo de Ramos - Entrada Triunfal. Inicio de la Semana de Pasión.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:iglesia_inicio_pasion@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260402T200000
+DTEND;TZID=America/Havana:20260402T213000
+SUMMARY:Jueves Santo - La Cena del Señor
+DESCRIPTION:Enseñanza del Pastor sobre "La Cena del Señor".
+LOCATION:Iglesia
+SEQUENCE:0
+UID:iglesia_jueves_santo@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260403T150000
+DTEND;TZID=America/Havana:20260403T170000
+SUMMARY:Viernes Santo - Las Siete Palabras
+DESCRIPTION:Culto de las Siete Palabras (muerte y crucifixión de Cristo).
+LOCATION:Iglesia
+SEQUENCE:0
+UID:iglesia_viernes_santo@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260405T073000
+DTEND;TZID=America/Havana:20260405T083000
+SUMMARY:Domingo de Resurrección - Matutino
+DESCRIPTION:Matutino especial con las Damas (previo al culto principal).
+LOCATION:Iglesia
+SEQUENCE:0
+UID:iglesia_matutino_pascua@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260405T090000
+DTEND;TZID=America/Havana:20260405T110000
+SUMMARY:Domingo de Resurrección - Culto
+DESCRIPTION:Celebración del Domingo de Resurrección.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:iglesia_culto_pascua@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260426T100000
+DTEND;TZID=America/Havana:20260426T120000
+SUMMARY:Escuela Bíblica - Presentación
+DESCRIPTION:Presentación de los niños y oración por los cumpleañeros del mes.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:iglesia_escuela_abr@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260516T100000
+DTEND;TZID=America/Havana:20260516T120000
+SUMMARY:Intercambio de Púlpito
+DESCRIPTION:Intercambio de púlpito con la iglesia filial.
+LOCATION:Iglesia Filial
+SEQUENCE:0
+UID:iglesia_intercambio_may@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260514T200000
+DTEND;TZID=America/Havana:20260514T213000
+SUMMARY:Ciclo del Hogar - Inicio
+DESCRIPTION:Inicio del Ciclo del Hogar y la Familia. A cargo de la Pastora y el Pastor.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:iglesia_ciclo_hogar_inicio@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260521T200000
+DTEND;TZID=America/Havana:20260521T213000
+SUMMARY:Ciclo del Hogar - Devocional
+DESCRIPTION:Devocional de familias a cargo de Jarley y Yaneisy.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:iglesia_devocional1_may@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260528T200000
+DTEND;TZID=America/Havana:20260528T213000
+SUMMARY:Ciclo del Hogar - Devocional
+DESCRIPTION:Devocional de familias a cargo de Raul y Arlet.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:iglesia_devocional2_may@iglesia.local
+END:VEVENT
+
+BEGIN:VEVENT
+DTSTART;TZID=America/Havana:20260531T100000
+DTEND;TZID=America/Havana:20260531T120000
+SUMMARY:Escuela Bíblica - Presentación
+DESCRIPTION:Presentación de los niños y oración por los cumpleañeros del mes.
+LOCATION:Iglesia
+SEQUENCE:0
+UID:iglesia_escuela_may@iglesia.local
+END:VEVENT
+
+END:VCALENDAR

@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario Diciembre - Iglesia Bautista de Sola</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #2c5aa0, #4a7ec7);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        .header-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .church-title h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .church-title h2 {
+            font-size: 1.4rem;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+        
+        .slogan {
+            font-style: italic;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .month-year {
+            text-align: center;
+            padding: 15px;
+            background-color: #e9f1fb;
+            border-bottom: 1px solid #d1dceb;
+        }
+        
+        .month-year h2 {
+            color: #2c5aa0;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background-color: #ddd;
+            border: 1px solid #ddd;
+        }
+        
+        .day-header {
+            background-color: #2c5aa0;
+            color: white;
+            padding: 12px 5px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .calendar-day {
+            background-color: white;
+            min-height: 180px;
+            padding: 10px;
+            overflow-y: auto;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .calendar-day:hover {
+            background-color: #f9fbfe;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .day-number {
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #2c5aa0;
+            margin-bottom: 5px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .event {
+            margin-bottom: 8px;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            line-height: 1.3;
+        }
+        
+        .event-ebd {
+            background-color: #e8f4fd;
+            border-left: 3px solid #3498db;
+        }
+        
+        .event-prayer {
+            background-color: #f0f9eb;
+            border-left: 3px solid #27ae60;
+        }
+        
+        .event-study {
+            background-color: #fef7e6;
+            border-left: 3px solid #f39c12;
+        }
+        
+        .event-reunion {
+            background-color: #f4e6fd;
+            border-left: 3px solid #9b59b6;
+        }
+        
+        .event-special {
+            background-color: #ffe6e6;
+            border-left: 3px solid #e74c3c;
+        }
+        
+        .event-time {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #555;
+        }
+        
+        .event-title {
+            font-weight: 600;
+            margin-top: 2px;
+            color: #333;
+        }
+        
+        .event-desc {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 2px;
+        }
+        
+        .notes-section {
+            padding: 25px 30px;
+            background-color: #f9fbfe;
+            border-top: 1px solid #e1e8f0;
+        }
+        
+        .notes-section h3 {
+            color: #2c5aa0;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            border-bottom: 2px solid #e1e8f0;
+            padding-bottom: 10px;
+        }
+        
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .note-category {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .note-category h4 {
+            color: #2c5aa0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .note-category h4 i {
+            color: #4a7ec7;
+        }
+        
+        .note-category ul {
+            padding-left: 20px;
+        }
+        
+        .note-category li {
+            margin-bottom: 10px;
+        }
+        
+        .highlight {
+            background-color: #fff9e6;
+            padding: 25px 30px;
+            margin: 25px 0;
+            border-radius: 8px;
+            border-left: 5px solid #f39c12;
+        }
+        
+        .highlight p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #333;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #2c5aa0;
+            color: white;
+            font-size: 0.9rem;
+        }
+        
+        .responsive-note {
+            display: none;
+            background-color: #e8f4fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            color: #2c5aa0;
+            text-align: center;
+        }
+        
+        @media (max-width: 1100px) {
+            .calendar-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .calendar-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .responsive-note {
+                display: block;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .calendar-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            body {
+                padding: 10px;
+            }
+            
+            .calendar-day {
+                min-height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="church-title">
+                    <h1>Iglesia Bautista de Sola</h1>
+                    <h2>Convención Bautista de Cuba Oriental</h2>
+                </div>
+                <div class="slogan">
+                    <i class="fas fa-cross"></i> Solo Cristo Salva
+                </div>
+            </div>
+            <p>Planificación de actividades - Diciembre 2025</p>
+        </header>
+        
+        <div class="month-year">
+            <h2>Diciembre 2025</h2>
+        </div>
+        
+        <div class="responsive-note">
+            <i class="fas fa-mobile-alt"></i> Desplázate hacia abajo para ver todas las actividades del mes
+        </div>
+        
+        <div class="calendar-grid">
+            <!-- Días de la semana -->
+            <div class="day-header">Domingo</div>
+            <div class="day-header">Lunes</div>
+            <div class="day-header">Martes</div>
+            <div class="day-header">Miércoles</div>
+            <div class="day-header">Jueves</div>
+            <div class="day-header">Viernes</div>
+            <div class="day-header">Sábado</div>
+            
+            <!-- Semana 1 -->
+            <div class="calendar-day">
+                <div class="day-number">30 (Nov)</div>
+                <div class="event event-ebd">
+                    <div class="event-time">EBD</div>
+                    <div class="event-title">Un ejemplo digno de imitar</div>
+                    <div class="event-desc">Fil. 2:1-11</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">1</div>
+                <div class="event event-prayer">
+                    <div class="event-time">Tiempo de oración</div>
+                    <div class="event-desc">Responsable: Marlenis</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">2</div>
+                <div class="event event-prayer">
+                    <div class="event-time">9:00 am - Tiempo de oración</div>
+                    <div class="event-desc">Responsable: Marlenis</div>
+                </div>
+                <div class="event event-prayer">
+                    <div class="event-time">4:00 pm - Tiempo de oración de la iglesia</div>
+                    <div class="event-desc">Responsable: Yordanka</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">3</div>
+                <div class="event event-prayer">
+                    <div class="event-time">Tiempo de intercesión</div>
+                    <div class="event-desc">Responsable: Marlenis</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">4</div>
+                <div class="event event-study">
+                    <div class="event-time">4:00 pm - Estudio Bíblico</div>
+                    <div class="event-title">La inerrancia de la Escritura</div>
+                    <div class="event-desc">Pastor</div>
+                </div>
+                <div class="event event-reunion">
+                    <div class="event-desc">Dev. Comisión de música</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">5</div>
+                <div class="event event-prayer">
+                    <div class="event-time">Tiempo de intercesión</div>
+                    <div class="event-desc">Responsable: Marlenis</div>
+                </div>
+                <div class="event event-reunion">
+                    <div class="event-time">5:00 pm - Ensayo Grupo de Alabanza</div>
+                    <div class="event-desc">Responsable: Carlos</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">6</div>
+                <div class="event event-prayer">
+                    <div class="event-time">8:00 am - Tiempo de intercesión</div>
+                    <div class="event-desc">Responsable: Marlenis</div>
+                </div>
+                <div class="event event-reunion">
+                    <div class="event-time">4:00 pm - Tiempo de departamentos</div>
+                    <div class="event-desc">Dev. Dpto Caballeros</div>
+                </div>
+            </div>
+            
+            <!-- Semana 2 -->
+            <div class="calendar-day">
+                <div class="day-number">7</div>
+                <div class="event event-ebd">
+                    <div class="event-time">EBD</div>
+                    <div class="event-title">Cansado de ser fuerte</div>
+                    <div class="event-desc">2 Cor 4.7</div>
+                </div>
+                <div class="event event-reunion">
+                    <div class="event-desc">Reunión para definir dúos de trabajo del nuevo proceso económico</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">8</div>
+                <div class="event event-special">
+                    <div class="event-title">Día de descanso</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">9</div>
+                <div class="event event-prayer">
+                    <div class="event-time">8:00 am - Tiempo de intercesión</div>
+                    <div class="event-desc">Responsable: Marlenis</div>
+                </div>
+                <div class="event event-prayer">
+                    <div class="event-time">Tiempo de oración de la iglesia</div>
+                    <div class="event-desc">Pastor</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">10</div>
+                <div class="event event-reunion">
+                    <div class="event-time">3:00 pm - Reunión con el presidente de los caballeros</div>
+                </div>
+                <div class="event event-reunion">
+                    <div class="event-time">4:00 pm - Posible reunión con el equipo de visión</div>
+                    <div class="event-desc">(Fecha variable)</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">11</div>
+                <div class="event event-study">
+                    <div class="event-time">4:00 pm - Estudio Bíblico</div>
+                    <div class="event-title">Interpretando el Antiguo Testamento</div>
+                </div>
+                <div class="event event-reunion">
+                    <div class="event-desc">Dev. Comisión de música</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">12</div>
+                <div class="event event-reunion">
+                    <div class="event-time">5:00 pm - Ensayo Grupo de Alabanza</div>
+                    <div class="event-desc">Responsable: Carlos</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">13</div>
+                <div class="event event-prayer">
+                    <div class="event-time">8:00 am - Tiempo de intercesión</div>
+                    <div class="event-desc">Responsable: Marlenis</div>
+                </div>
+                <div class="event event-reunion">
+                    <div class="event-time">4:00 pm - Tiempo en departamentos</div>
+                    <div class="event-desc">Dev. Dpto de Damas</div>
+                </div>
+            </div>
+            
+            <!-- Semana 3 -->
+            <div class="calendar-day">
+                <div class="day-number">14</div>
+                <div class="event event-ebd">
+                    <div class="event-time">EBD</div>
+                    <div class="event-title">De las tinieblas a la luz</div>
+                    <div class="event-desc">1 Juan 1:5-10</div>
+                </div>
+                <div class="event event-reunion">
+                    <div class="event-desc">Posible reunión con ministerio Infantil</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">15</div>
+                <div class="event event-special">
+                    <div class="event-title">INICIO SEMANA DE LOS JÓVENES</div>
+                    <div class="event-desc">Lema: Jóvenes con propósito impactando generaciones</div>
+                    <div class="event-desc">Texto: Isaías 42:6-7</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">16</div>
+                <div class="event event-prayer">
+                    <div class="event-time">Tiempo de intercesión</div>
+                    <div class="event-desc">Responsable: Marlenis</div>
+                </div>
+                <div class="event event-special">
+                    <div class="event-time">4:00 pm - Apertura semana de los jóvenes</div>
+                    <div class="event-desc">Dev. Arlet - Ministra Lisbeth</div>
+                </div>
+                <div class="event event-special">
+                    <div class="event-desc">Predica: Gehovanna</div>
+                </div>
+                <div class="event event-special">
+                    <div class="event-desc">Pastor en seminario enseñando griego</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">17</div>
+                <div class="event event-special">
+                    <div class="event-title">Seminario</div>
+                    <div class="event-desc">Pastor en seminario enseñando griego</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">18</div>
+                <div class="event event-special">
+                    <div class="event-title">Seminario</div>
+                    <div class="event-desc">Pastor en seminario enseñando griego</div>
+                </div>
+                <div class="event event-study">
+                    <div class="event-time">4:00 pm - Estudio Bíblico</div>
+                    <div class="event-desc">Dev. Jóvenes de la Filial</div>
+                </div>
+                <div class="event event-special">
+                    <div class="event-desc">Predica: pastor Justo Pila (Nuevo pastor de la Filial)</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">19</div>
+                <div class="event event-special">
+                    <div class="event-title">Seminario</div>
+                    <div class="event-desc">Pastor en seminario enseñando griego</div>
+                </div>
+                <div class="event event-special">
+                    <div class="event-desc">Actividad de las Damas y los caballeros</div>
+                </div>
+                <div class="event event-special">
+                    <div class="event-time">10:00 pm - 12:00 am - Vigilia</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">20</div>
+                <div class="event event-prayer">
+                    <div class="event-time">Tiempo de intercesión</div>
+                    <div class="event-desc">Responsable: Marlenis (enfoque en el concierto)</div>
+                </div>
+                <div class="event event-special">
+                    <div class="event-title">Ensayo</div>
+                </div>
+                <div class="event event-special">
+                    <div class="event-desc">Tiempo de evangelismo</div>
+                </div>
+                <div class="event event-special">
+                    <div class="event-title">CONCIERTO</div>
+                    <div class="event-desc">Grupo de Alabanza</div>
+                </div>
+                <div class="event event-special">
+                    <div class="event-desc">Reflexión: Yordanka Álvarez</div>
+                </div>
+            </div>
+            
+            <!-- Semana 4 -->
+            <div class="calendar-day">
+                <div class="day-number">21</div>
+                <div class="event event-ebd">
+                    <div class="event-time">EBD - Devocional por los jóvenes</div>
+                    <div class="event-desc">Predica: pastor</div>
+                </div>
+                <div class="event event-special">
+                    <div class="event-title">CIERRE SEMANA DE LOS JÓVENES</div>
+                    <div class="event-desc">Texto: 1 Sam 3.1-18</div>
+                </div>
+                <div class="event event-reunion">
+                    <div class="event-desc">Reunión con el administrador de la cena de la iglesia (Celso) y equipo de trabajo</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">22</div>
+                <div class="event event-special">
+                    <div class="event-title">Día de descanso</div>
+                </div>
+                <div class="event event-reunion">
+                    <div class="event-desc">Actividad de la tercera edad</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">23</div>
+                <div class="event event-prayer">
+                    <div class="event-time">Tiempo de intercesión</div>
+                    <div class="event-desc">Responsable: Marlenis</div>
+                </div>
+                <div class="event event-prayer">
+                    <div class="event-time">4:00 pm - Tiempo de oración de la iglesia</div>
+                    <div class="event-desc">Responsable: Jarley</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">24</div>
+                <div class="event event-special">
+                    <div class="event-title">Nochebuena</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">25</div>
+                <div class="event event-special">
+                    <div class="event-title">Navidad</div>
+                </div>
+                <div class="event event-study">
+                    <div class="event-time">Estudio Bíblico - Dev. Comisión de Música</div>
+                    <div class="event-title">Interpretando el Nuevo Testamento</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">26</div>
+                <div class="event event-special">
+                    <div class="event-desc">Actividad de los jóvenes</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">27</div>
+                <div class="event event-special">
+                    <div class="event-title">CULTO UNIDO</div>
+                    <div class="event-desc">Entre todos los departamentos</div>
+                    <div class="event-desc">Responsable: Sandra y Lisbeth</div>
+                </div>
+            </div>
+            
+            <!-- Semana 5 -->
+            <div class="calendar-day">
+                <div class="day-number">28</div>
+                <div class="event event-ebd">
+                    <div class="event-time">EBD - Último programa del año</div>
+                    <div class="event-title">Día de acción de gracias</div>
+                    <div class="event-desc">Tema: Por definir</div>
+                </div>
+                <div class="event event-special">
+                    <div class="event-desc">Brindis con la iglesia</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">29</div>
+                <div class="event event-special">
+                    <div class="event-title">Preparativos para la cena de la Iglesia</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">30</div>
+                <div class="event event-special">
+                    <div class="event-title">CENA DE LA IGLESIA</div>
+                    <div class="event-desc">Administrador: Celso y su equipo administrativo</div>
+                    <div class="event-desc">Social: Responsable Dpto de jóvenes</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">31</div>
+                <div class="event event-special">
+                    <div class="event-title">Fin de año - Descanso</div>
+                    <div class="event-desc">Hasta el domingo 7 de enero</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">1 (Ene)</div>
+                <div class="event event-special">
+                    <div class="event-title">Descanso</div>
+                    <div class="event-desc">Hasta el domingo 7 de enero</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">2 (Ene)</div>
+                <div class="event event-special">
+                    <div class="event-title">Descanso</div>
+                    <div class="event-desc">Hasta el domingo 7 de enero</div>
+                </div>
+            </div>
+            
+            <div class="calendar-day">
+                <div class="day-number">3 (Ene)</div>
+                <div class="event event-special">
+                    <div class="event-title">Descanso</div>
+                    <div class="event-desc">Hasta el domingo 7 de enero</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="highlight">
+            <p><strong>Nota importante:</strong> Se propone cambiar los tiempos de intercesión a las 8:00 am, ya que los cultos de por la tarde se cambiaron por una hora de diferencia, parece coherente hacer lo mismo con el programa de la mañana, para que los que vienen a ambos programas tengan tiempo para prepararse.</p>
+        </div>
+        
+        <div class="notes-section">
+            <h3><i class="fas fa-clipboard-list"></i> Información Importante</h3>
+            
+            <div class="notes-grid">
+                <div class="note-category">
+                    <h4><i class="fas fa-calendar-check"></i> Eventos Especiales</h4>
+                    <ul>
+                        <li><strong>15-21 Diciembre:</strong> Semana de los jóvenes. Jueves 18 tendremos la visita de los hermanos de la filial.</li>
+                        <li><strong>Sábado 20:</strong> Concierto especial (Cantata).</li>
+                        <li><strong>Sábado 27:</strong> Culto unido de cierre con participación de todos los departamentos.</li>
+                        <li><strong>Domingo 28:</strong> Culto de cierre de año, programa de acción de gracias especial.</li>
+                        <li><strong>Martes 30:</strong> Cena de la iglesia (Celso administrador, jóvenes responsables del social).</li>
+                        <li><strong>31 Dic - 6 Ene:</strong> Iglesia descansa hasta el domingo 7 de enero (culto de reapertura).</li>
+                    </ul>
+                </div>
+                
+                <div class="note-category">
+                    <h4><i class="fas fa-user-friends"></i> Liderazgo y Responsabilidades</h4>
+                    <ul>
+                        <li>Cada líder es responsable de su área de trabajo.</li>
+                        <li>Los líderes deben respetar los límites de su área, sin interferir en otras comisiones.</li>
+                        <li>Deben ser respetuosos con los horarios y ser puntuales.</li>
+                        <li>Si delegas una responsabilidad, debes supervisar que se cumpla.</li>
+                        <li>Cada programa o evento tiene un responsable que responde por todo lo relacionado.</li>
+                    </ul>
+                </div>
+                
+                <div class="note-category">
+                    <h4><i class="fas fa-tasks"></i> Procesos en Curso</h4>
+                    <ul>
+                        <li><strong>Proceso económico:</strong> Nuevo sistema en implementación (3 etapas entre diciembre y enero).</li>
+                        <li><strong>Visión de la iglesia:</strong> Comisión encargada de soñar y diseñar la visión común.</li>
+                        <li><strong>Escuela Bíblica Dominical:</strong> Organización en proceso (comisiones, maestros, ministerios).</li>
+                        <li><strong>Comisión de visión:</strong> Anuncio de integrantes al principio de la semana, primera reunión próxima.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="highlight">
+            <p><strong>Mensaje final:</strong> Estamos en un proceso guiado por Dios. Él ha preparado la iglesia para esta etapa, y a nosotros también. El desafío para cada uno de nosotros es, si Dios preparó este proceso, seamos parte de lo que Dios está haciendo. Tienes la oportunidad de escoger si vas a oponerte a lo que Dios quiere hacer, o si vas a alinearte, y disfrutar el sueño común de ver a Dios edificando su Iglesia, de acuerdo a su palabra. No te pierdas la oportunidad de ser parte de esto, porque Dios ama a su iglesia, y aún las puertas del Hades no prevalecerán contra ella.</p>
+        </div>
+        
+        <footer>
+            <p>Iglesia Bautista de Sola - "Solo Cristo Salva" - Diciembre 2025</p>
+            <p>Convención Bautista de Cuba Oriental</p>
+        </footer>
+    </div>
+
+    <script>
+        // Agregar interacción a los días del calendario
+        document.addEventListener('DOMContentLoaded', function() {
+            const days = document.querySelectorAll('.calendar-day');
+            
+            days.forEach(day => {
+                day.addEventListener('click', function() {
+                    // Remover la clase 'selected' de todos los días
+                    days.forEach(d => d.classList.remove('selected'));
+                    
+                    // Agregar la clase 'selected' al día clickeado
+                    this.classList.add('selected');
+                    
+                    // Desplazar suavemente la vista al día seleccionado
+                    this.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                });
+            });
+            
+            // Resaltar el día actual (solo para demostración, en realidad debería calcularse)
+            const today = new Date();
+            if (today.getMonth() === 11 && today.getFullYear() === 2025) {
+                const dayNumber = today.getDate();
+                const dayElements = document.querySelectorAll('.day-number');
+                
+                dayElements.forEach(element => {
+                    if (element.textContent.includes(dayNumber.toString()) && 
+                        !element.textContent.includes('Nov') && 
+                        !element.textContent.includes('Ene')) {
+                        element.parentElement.style.backgroundColor = '#e8f4fd';
+                        element.parentElement.style.border = '2px solid #2c5aa0';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

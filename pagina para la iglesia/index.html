@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iglesia Solo Cristo Salva - Administración</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1><i class="fas fa-church"></i> Iglesia Bautista "Solo Cristo Salva"</h1>
+            <p class="subtitle">Planificación y Recursos · Febrero - Mayo 2026</p>
+        </div>
+    </header>
+
+    <nav class="tab-nav container">
+        <button class="tab-button active" data-tab="calendario"><i class="fas fa-calendar-alt"></i> Calendario</button>
+        <button class="tab-button" data-tab="anuncios"><i class="fas fa-bullhorn"></i> Anuncios</button>
+        <button class="tab-button" data-tab="ensenanzas"><i class="fas fa-bible"></i> Enseñanzas</button>
+        <button class="tab-button" data-tab="recursos"><i class="fas fa-folder-open"></i> Recursos</button>
+    </nav>
+
+    <main class="container">
+        <!-- PESTAÑA CALENDARIO -->
+        <section id="calendario" class="tab-content active">
+            <div class="calendar-filters">
+                <button class="filter-btn active" data-filter="todos">Todos</button>
+                <button class="filter-btn" data-filter="iglesia"><i class="fas fa-users"></i> Iglesia General</button>
+                <button class="filter-btn" data-filter="damas"><i class="fas fa-female"></i> Damas</button>
+                <button class="filter-btn" data-filter="jovenes"><i class="fas fa-user-graduate"></i> Jóvenes</button>
+            </div>
+
+            <div id="calendar-grid" class="calendar-grid">
+                <!-- Los eventos se cargarán desde JavaScript -->
+            </div>
+        </section>
+
+        <!-- PESTAÑA ANUNCIOS -->
+        <section id="anuncios" class="tab-content">
+            <div class="admin-toolbar">
+                <button id="nuevoAnuncioBtn" class="btn-primary"><i class="fas fa-plus"></i> Nuevo Anuncio</button>
+            </div>
+            <div id="anuncios-list" class="anuncios-grid">
+                <!-- Los anuncios se cargarán desde JS/localStorage -->
+            </div>
+        </section>
+
+        <!-- PESTAÑA ENSEÑANZAS -->
+        <section id="ensenanzas" class="tab-content">
+            <div class="admin-toolbar">
+                <button id="nuevaEnsenanzaBtn" class="btn-primary"><i class="fas fa-plus"></i> Nueva Enseñanza</button>
+                <select id="filtroEnsenanza" class="filtro-select">
+                    <option value="todas">Todas</option>
+                    <option value="Pastor">Pastor</option>
+                    <option value="Pastora">Pastora</option>
+                    <option value="Jarley">Jarley</option>
+                    <option value="Marice">Marice</option>
+                    <option value="Jóvenes">Jóvenes</option>
+                    <option value="Damas">Damas</option>
+                </select>
+            </div>
+            <div id="ensenanzas-list" class="ensenanzas-grid">
+                <!-- Las enseñanzas se cargarán desde JS/localStorage -->
+            </div>
+        </section>
+
+        <!-- PESTAÑA RECURSOS -->
+        <section id="recursos" class="tab-content">
+            <div class="admin-toolbar">
+                <button id="nuevoRecursoBtn" class="btn-primary"><i class="fas fa-plus"></i> Añadir Recurso</button>
+            </div>
+            <div id="recursos-list" class="recursos-grid">
+                <!-- Los recursos se cargarán desde JS/localStorage -->
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL PARA AÑADIR/EDITAR (reutilizable) -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modal-titulo">Título</h2>
+            <form id="modal-form">
+                <input type="hidden" id="item-id">
+                <div class="form-group">
+                    <label for="item-titulo">Título</label>
+                    <input type="text" id="item-titulo" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-descripcion">Descripción / Contenido</label>
+                    <textarea id="item-descripcion" rows="3" required></textarea>
+                </div>
+                <div class="form-group" id="campo-departamento" style="display:none;">
+                    <label for="item-departamento">Departamento</label>
+                    <select id="item-departamento">
+                        <option value="iglesia">Iglesia General</option>
+                        <option value="damas">Damas</option>
+                        <option value="jovenes">Jóvenes</option>
+                    </select>
+                </div>
+                <div class="form-group" id="campo-fecha" style="display:none;">
+                    <label for="item-fecha">Fecha</label>
+                    <input type="date" id="item-fecha">
+                </div>
+                <div class="form-group" id="campo-hora" style="display:none;">
+                    <label for="item-hora">Hora</label>
+                    <input type="time" id="item-hora">
+                </div>
+                <div class="form-group" id="campo-autor" style="display:none;">
+                    <label for="item-autor">Autor / Responsable</label>
+                    <input type="text" id="item-autor">
+                </div>
+                <div class="form-group" id="campo-url" style="display:none;">
+                    <label for="item-url">URL (enlace)</label>
+                    <input type="url" id="item-url" placeholder="https://...">
+                </div>
+                <div class="form-group" id="campo-tipo" style="display:none;">
+                    <label for="item-tipo">Tipo</label>
+                    <select id="item-tipo">
+                        <option value="audio">Audio</option>
+                        <option value="video">Video</option>
+                        <option value="documento">Documento</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 Iglesia Bautista "Solo Cristo Salva" - Administración interna</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
