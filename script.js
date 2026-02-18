@@ -1,5 +1,4 @@
 // ==================== CONFIGURACIÓN PREDETERMINADA ====================
-// Estos valores se usarán solo si no hay configuración guardada
 const CONFIG_PREDETERMINADA = {
     BIN_ID: '69961800ae596e708f353340',
     API_KEY: '$2a$10$dIvq0wIoXhyOp0HoP09EretN7mTKeiZPMTyL4LJNpnP7m44LpBwyC',
@@ -15,6 +14,7 @@ let itemEditandoId = null;
 // ==================== DATOS INICIALES ====================
 const datosIniciales = {
     eventos: [
+        // Eventos existentes
         { id: 'e1', titulo: 'Ayuno y Oración', descripcion: 'Por la evangelización', departamento: 'iglesia', fecha: '2026-03-07', hora: '08:00', responsable: 'Pastor' },
         { id: 'e2', titulo: 'Oración de Damas', descripcion: 'Madres por hijos', departamento: 'damas', fecha: '2026-02-02', hora: '15:00', responsable: 'Odilia' },
         { id: 'e3', titulo: 'Picnic Jóvenes', descripcion: 'En finca Sola 1', departamento: 'jovenes', fecha: '2026-02-13', hora: '15:00', responsable: 'Jóvenes' },
@@ -27,21 +27,55 @@ const datosIniciales = {
         { id: 'e10', titulo: 'Domingo Resurrección', descripcion: 'Matutino y culto', departamento: 'iglesia', fecha: '2026-04-05', hora: '07:30', responsable: 'Pastora' },
         { id: 'e11', titulo: 'Evento Alcance Jóvenes', descripcion: 'Caldosa y evangelio', departamento: 'jovenes', fecha: '2026-03-16', hora: '16:00', responsable: 'Jóvenes' },
         { id: 'e12', titulo: 'Confraternización', descripcion: 'Solteros y matrimonios', departamento: 'jovenes', fecha: '2026-04-13', hora: '10:00', responsable: 'Jóvenes' },
+        
+        // NUEVOS: Eventos de Juveniles
+        { id: 'e13', titulo: 'Reunión Juveniles', descripcion: 'Estudio bíblico y dinámicas', departamento: 'juveniles', fecha: '2026-02-15', hora: '16:00', responsable: 'Michel' },
+        { id: 'e14', titulo: 'Retiro Juvenil', descripcion: 'Fin de semana de convivencia', departamento: 'juveniles', fecha: '2026-03-20', hora: '09:00', responsable: 'Líderes juveniles' },
+        { id: 'e15', titulo: 'Noche de Jóvenes', descripcion: 'Alabanza y palabra', departamento: 'juveniles', fecha: '2026-04-17', hora: '19:00', responsable: 'Michel' },
+        
+        // NUEVOS: Eventos de Ministerio Infantil
+        { id: 'e16', titulo: 'Escuela Dominical Infantil', descripcion: 'Clases para niños', departamento: 'infantil', fecha: '2026-02-07', hora: '09:00', responsable: 'Maestros' },
+        { id: 'e17', titulo: 'Reunión de Maestros', descripcion: 'Planificación mensual', departamento: 'infantil', fecha: '2026-02-14', hora: '10:00', responsable: 'Coordinador infantil' },
+        { id: 'e18', titulo: 'Día del Niño', descripcion: 'Actividades especiales', departamento: 'infantil', fecha: '2026-04-12', hora: '10:00', responsable: 'Ministerio Infantil' },
+        { id: 'e19', titulo: 'Manualidades Bíblicas', descripcion: 'Taller para niños', departamento: 'infantil', fecha: '2026-03-14', hora: '14:00', responsable: 'Maestras' },
+        
+        // NUEVOS: Eventos de Caballeros
+        { id: 'e20', titulo: 'Reunión de Caballeros', descripcion: 'Tema: Liderazgo familiar', departamento: 'caballeros', fecha: '2026-02-14', hora: '09:00', responsable: 'Jarley' },
+        { id: 'e21', titulo: 'Desayuno de Varones', descripcion: 'Compartir y oración', departamento: 'caballeros', fecha: '2026-03-14', hora: '08:00', responsable: 'Hnos. caballeros' },
+        { id: 'e22', titulo: 'Confraternidad de Caballeros', descripcion: 'Deporte y compañerismo', departamento: 'caballeros', fecha: '2026-04-25', hora: '09:00', responsable: 'Caballeros' },
+        { id: 'e23', titulo: 'Sábado de Caballeros', descripcion: 'Tema: El guerrero de Dios', departamento: 'caballeros', fecha: '2026-05-23', hora: '09:00', responsable: 'Jarley' },
+        
+        // NUEVOS: Eventos de Instituto Bíblico
+        { id: 'e24', titulo: 'Inicio Instituto Bíblico', descripcion: 'Clase: Introducción a la Biblia', departamento: 'instituto', fecha: '2026-03-04', hora: '19:00', responsable: 'Pastor' },
+        { id: 'e25', titulo: 'Instituto Bíblico - Módulo 2', descripcion: 'Clase: Antiguo Testamento', departamento: 'instituto', fecha: '2026-03-11', hora: '19:00', responsable: 'Pastor' },
+        { id: 'e26', titulo: 'Instituto Bíblico - Módulo 3', descripcion: 'Clase: Nuevo Testamento', departamento: 'instituto', fecha: '2026-03-18', hora: '19:00', responsable: 'Pastor' },
+        { id: 'e27', titulo: 'Instituto Bíblico - Módulo 4', descripcion: 'Clase: Hermenéutica', departamento: 'instituto', fecha: '2026-03-25', hora: '19:00', responsable: 'Pastor' },
+        { id: 'e28', titulo: 'Instituto Bíblico - Examen', descripcion: 'Evaluación del mes', departamento: 'instituto', fecha: '2026-04-01', hora: '19:00', responsable: 'Pastor' },
+        
+        // Eventos de marzo adicionales
+        { id: 'e29', titulo: 'Instituto Bíblico', descripcion: 'Clase regular', departamento: 'instituto', fecha: '2026-03-04', hora: '19:00', responsable: 'Pastor' },
+        { id: 'e30', titulo: 'Instituto Bíblico', descripcion: 'Clase regular', departamento: 'instituto', fecha: '2026-03-18', hora: '19:00', responsable: 'Pastor' },
     ],
     anuncios: [
         { id: 'a1', titulo: 'Reunión de damas', descripcion: 'Confirmar asistencia', fecha: '2026-02-10' },
         { id: 'a2', titulo: 'Ensayo de música', descripcion: 'Sábado 4pm', fecha: '2026-02-12' },
+        { id: 'a3', titulo: 'Instituto Bíblico', descripcion: 'Inicia el 4 de marzo - 7pm', fecha: '2026-02-20' },
+        { id: 'a4', titulo: 'Reunión de Juveniles', descripcion: 'Todos los sábados 4pm', fecha: '2026-02-15' },
     ],
     ensenanzas: [
         { id: 'n1', titulo: 'Principios Bautistas', descripcion: 'Serie de enseñanzas', autor: 'Pastor', fecha: '2026-02-05', url: '' },
         { id: 'n2', titulo: 'Cómo hacer discípulos', descripcion: 'Taller misioneros', autor: 'Pastor', fecha: '2026-03-05', url: '' },
         { id: 'n3', titulo: 'La Fe sobre las obras', descripcion: 'Estudio', autor: 'Pastor', fecha: '2026-04-09', url: '' },
         { id: 'n4', titulo: 'Devocional familias', descripcion: 'Jarley y Yaneisy', autor: 'Jarley', fecha: '2026-05-21', url: '' },
+        { id: 'n5', titulo: 'Liderazgo para Caballeros', descripcion: 'Serie para varones', autor: 'Jarley', fecha: '2026-02-14', url: '' },
+        { id: 'n6', titulo: 'Enseñanza para Juveniles', descripcion: 'Identidad en Cristo', autor: 'Michel', fecha: '2026-02-15', url: '' },
     ],
     recursos: [
         { id: 'r1', titulo: 'Libro de Cantos', descripcion: 'PDF con himnos', tipo: 'documento', url: '' },
         { id: 'r2', titulo: 'Predicación: La Cruz', descripcion: 'Audio MP3', tipo: 'audio', url: '' },
         { id: 'r3', titulo: 'Calendario 2026', descripcion: 'Planificación completa', tipo: 'documento', url: '' },
+        { id: 'r4', titulo: 'Material para Maestros', descripcion: 'Guías para escuela dominical', tipo: 'documento', url: '' },
+        { id: 'r5', titulo: 'Estudio Bíblico - Instituto', descripcion: 'Apuntes del curso', tipo: 'documento', url: '' },
     ]
 };
 
@@ -365,11 +399,35 @@ async function renderCalendario(filtro = 'todos') {
             day: 'numeric' 
         });
         
+        // Mapeo de nombres de departamentos para mostrar
+        const nombreDepartamento = {
+            'iglesia': 'Iglesia General',
+            'damas': 'Damas',
+            'jovenes': 'Jóvenes',
+            'juveniles': 'Juveniles',
+            'infantil': 'Ministerio Infantil',
+            'caballeros': 'Caballeros',
+            'instituto': 'Instituto Bíblico'
+        }[event.departamento] || event.departamento;
+        
+        // Colores por departamento
+        const colores = {
+            'iglesia': '#2c3e50',
+            'damas': '#e83e8c',
+            'jovenes': '#17a2b8',
+            'juveniles': '#fd7e14',
+            'infantil': '#28a745',
+            'caballeros': '#007bff',
+            'instituto': '#6f42c1'
+        };
+        
         html += `
-            <div class="event-card ${event.departamento}" data-id="${event.id}">
+            <div class="event-card" style="border-left-color: ${colores[event.departamento] || '#2c3e50'};" data-id="${event.id}">
                 <div class="event-date"><i class="far fa-calendar-alt"></i> ${fechaStr}</div>
                 <h3 class="event-title">${event.titulo}</h3>
-                <span class="event-department">${event.departamento === 'iglesia' ? 'Iglesia General' : event.departamento === 'damas' ? 'Damas' : 'Jóvenes'}</span>
+                <span class="event-department" style="background: ${colores[event.departamento] || '#2c3e50'}; color: white;">
+                    ${nombreDepartamento}
+                </span>
                 <p class="event-description">${event.descripcion}</p>
                 <div class="event-meta">
                     ${event.hora ? `<span><i class="far fa-clock"></i> ${event.hora}</span>` : ''}
@@ -577,6 +635,18 @@ function abrirModal(titulo, tipo, item = null) {
         document.getElementById('campo-fecha').style.display = 'block';
         document.getElementById('campo-hora').style.display = 'block';
         document.getElementById('campo-autor').style.display = 'block';
+        
+        // Añadir opciones al select de departamento
+        const deptoSelect = document.getElementById('item-departamento');
+        deptoSelect.innerHTML = `
+            <option value="iglesia">Iglesia General</option>
+            <option value="damas">Damas</option>
+            <option value="jovenes">Jóvenes</option>
+            <option value="juveniles">Juveniles</option>
+            <option value="infantil">Ministerio Infantil</option>
+            <option value="caballeros">Caballeros</option>
+            <option value="instituto">Instituto Bíblico</option>
+        `;
         
         if (item) {
             document.getElementById('item-titulo').value = item.titulo;
@@ -798,18 +868,50 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
     
-    // Filtros calendario
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            renderCalendario(btn.dataset.filter);
+    // Filtros calendario - ACTUALIZADO con nuevos departamentos
+    const filterContainer = document.querySelector('.calendar-filters');
+    if (filterContainer) {
+        filterContainer.innerHTML = `
+            <button class="filter-btn active" data-filter="todos">Todos</button>
+            <button class="filter-btn" data-filter="iglesia"><i class="fas fa-users"></i> Iglesia General</button>
+            <button class="filter-btn" data-filter="damas"><i class="fas fa-female"></i> Damas</button>
+            <button class="filter-btn" data-filter="jovenes"><i class="fas fa-user-graduate"></i> Jóvenes</button>
+            <button class="filter-btn" data-filter="juveniles"><i class="fas fa-child"></i> Juveniles</button>
+            <button class="filter-btn" data-filter="infantil"><i class="fas fa-baby"></i> Infantil</button>
+            <button class="filter-btn" data-filter="caballeros"><i class="fas fa-male"></i> Caballeros</button>
+            <button class="filter-btn" data-filter="instituto"><i class="fas fa-book"></i> Instituto</button>
+            <button id="nuevoEventoBtn" class="btn-primary" style="margin-left:auto;"><i class="fas fa-plus"></i> Nuevo Evento</button>
+        `;
+        
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (e.target.id === 'nuevoEventoBtn') return;
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderCalendario(btn.dataset.filter);
+            });
         });
-    });
+        
+        document.getElementById('nuevoEventoBtn')?.addEventListener('click', () => abrirModalEvento());
+    }
     
     // Filtro enseñanzas
     const filtroEnsenanza = document.getElementById('filtroEnsenanza');
     if (filtroEnsenanza) {
+        // Actualizar opciones del filtro de enseñanzas
+        filtroEnsenanza.innerHTML = `
+            <option value="todas">Todas</option>
+            <option value="Pastor">Pastor</option>
+            <option value="Pastora">Pastora</option>
+            <option value="Jarley">Jarley</option>
+            <option value="Marice">Marice</option>
+            <option value="Michel">Michel</option>
+            <option value="Jóvenes">Jóvenes</option>
+            <option value="Damas">Damas</option>
+            <option value="Caballeros">Caballeros</option>
+            <option value="Infantil">Infantil</option>
+        `;
+        
         filtroEnsenanza.addEventListener('change', (e) => {
             renderEnsenanzas(e.target.value);
         });
@@ -819,17 +921,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('nuevoAnuncioBtn')?.addEventListener('click', () => abrirModalAnuncio());
     document.getElementById('nuevaEnsenanzaBtn')?.addEventListener('click', () => abrirModalEnsenanza());
     document.getElementById('nuevoRecursoBtn')?.addEventListener('click', () => abrirModalRecurso());
-    
-    // Botón nuevo evento (hay que añadirlo en el HTML)
-    const calendarFilters = document.querySelector('.calendar-filters');
-    if (calendarFilters) {
-        const nuevoEventoBtn = document.createElement('button');
-        nuevoEventoBtn.innerHTML = '<i class="fas fa-plus"></i> Nuevo Evento';
-        nuevoEventoBtn.className = 'btn-primary';
-        nuevoEventoBtn.style.marginLeft = 'auto';
-        nuevoEventoBtn.addEventListener('click', () => abrirModalEvento());
-        calendarFilters.appendChild(nuevoEventoBtn);
-    }
     
     // Cerrar modal
     document.querySelector('.close-modal')?.addEventListener('click', cerrarModal);
