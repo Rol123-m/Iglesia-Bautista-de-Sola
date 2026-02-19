@@ -11,47 +11,62 @@ let itemEditandoId = null;
 let esAdmin = false;
 let notificacionesLeidas = new Set();
 
-// ==================== FUNCIÓN PRINCIPAL PARA GOOGLE SHEETS (JSONP MEJORADO) ====================
+// Detectar si estamos en móvil o en file://
+const esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const esFileProtocol = window.location.protocol === 'file:';
+const usarProxy = esMovil || esFileProtocol;
 
-function peticionSheets(accion, datos = null, tipo = null, id = null, password = null) {
+// Lista de proxies CORS gratuitos
+const PROXIES = [
+    'https://api.allorigins.win/raw?url=',
+    'https://cors-anywhere.herokuapp.com/',
+    'https://corsproxy.io/?'
+];
+
+// ==================== FUNCIÓN PRINCIPAL PARA GOOGLE SHEETS ====================
+
+async function peticionSheets(accion, datos = null, tipo = null, id = null, password = null) {
+    // Construir URL base
+    let urlBase = SHEETS_CONFIG.URL + '?accion=' + encodeURIComponent(accion);
+    urlBase += '&_=' + Date.now(); // Evitar caché
+    
+    if (datos) urlBase += '&datos=' + encodeURIComponent(JSON.stringify(datos));
+    if (tipo) urlBase += '&tipo=' + encodeURIComponent(tipo);
+    if (id) urlBase += '&id=' + encodeURIComponent(id);
+    if (password) urlBase += '&password=' + encodeURIComponent(password);
+    
+    // Si estamos en móvil o file://, usar proxy con fetch
+    if (usarProxy) {
+        return peticionConProxy(urlBase);
+    } else {
+        // En escritorio con http/https, usar JSONP
+        return peticionJSONP(urlBase);
+    }
+}
+
+// Versión JSONP para escritorio
+function peticionJSONP(url) {
     return new Promise((resolve, reject) => {
         try {
-            // Construir URL con parámetros
-            let url = SHEETS_CONFIG.URL + '?accion=' + encodeURIComponent(accion);
-            url += '&_=' + Date.now(); // Evitar caché
-            
-            if (datos) url += '&datos=' + encodeURIComponent(JSON.stringify(datos));
-            if (tipo) url += '&tipo=' + encodeURIComponent(tipo);
-            if (id) url += '&id=' + encodeURIComponent(id);
-            if (password) url += '&password=' + encodeURIComponent(password);
-            
-            // Callback único
             const callbackName = 'jsonp_cb_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            url += '&callback=' + callbackName;
+            const urlCompleta = url + '&callback=' + callbackName;
             
-            console.log('JSONP Request:', url);
+            console.log('JSONP Request:', urlCompleta);
             
-            // Crear script
             const script = document.createElement('script');
-            script.src = url;
+            script.src = urlCompleta;
             script.async = true;
             
-            // Timeout más largo para móviles
             const timeout = setTimeout(() => {
                 delete window[callbackName];
-                if (document.body.contains(script)) {
-                    document.body.removeChild(script);
-                }
+                if (document.body.contains(script)) document.body.removeChild(script);
                 reject(new Error('Tiempo de espera agotado'));
-            }, 30000); // 30 segundos para móviles lentos
+            }, 15000);
             
-            // Callback global
             window[callbackName] = function(data) {
                 clearTimeout(timeout);
                 delete window[callbackName];
-                if (document.body.contains(script)) {
-                    document.body.removeChild(script);
-                }
+                if (document.body.contains(script)) document.body.removeChild(script);
                 
                 if (data && data.error) {
                     reject(new Error(data.error));
@@ -60,13 +75,10 @@ function peticionSheets(accion, datos = null, tipo = null, id = null, password =
                 }
             };
             
-            // Error handler
             script.onerror = function() {
                 clearTimeout(timeout);
                 delete window[callbackName];
-                if (document.body.contains(script)) {
-                    document.body.removeChild(script);
-                }
+                if (document.body.contains(script)) document.body.removeChild(script);
                 reject(new Error('Error de conexión'));
             };
             
@@ -78,14 +90,54 @@ function peticionSheets(accion, datos = null, tipo = null, id = null, password =
     });
 }
 
+// Versión con proxy para móviles
+async function peticionConProxy(url) {
+    // Intentar con cada proxy hasta que uno funcione
+    for (const proxy of PROXIES) {
+        try {
+            const proxyUrl = proxy + encodeURIComponent(url);
+            console.log('Proxy Request:', proxyUrl);
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 20000);
+            
+            const response = await fetch(proxyUrl, {
+                method: 'GET',
+                mode: 'cors',
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Proxy response:', data);
+                return data;
+            }
+        } catch (error) {
+            console.log('Proxy falló:', proxy, error);
+            // Continuar con el siguiente proxy
+        }
+    }
+    
+    // Si todos los proxies fallan, intentar JSONP directo como último recurso
+    console.log('Todos los proxies fallaron, intentando JSONP directo...');
+    try {
+        return await peticionJSONP(url);
+    } catch (jsonpError) {
+        throw new Error('No se pudo conectar a los datos');
+    }
+}
+
 // ==================== FUNCIONES CRUD ====================
 
 async function cargarDatos() {
     try {
         document.body.style.cursor = 'wait';
         console.log('Cargando datos desde Google Sheets...');
+        console.log('Usando proxy:', usarProxy);
         
-        // Intentar con JSONP
+        // Intentar cargar con el método correspondiente
         try {
             const respuesta = await peticionSheets('leer');
             console.log('Respuesta recibida:', respuesta);
@@ -110,8 +162,8 @@ async function cargarDatos() {
             } else {
                 throw new Error('Formato de respuesta inválido');
             }
-        } catch (jsonpError) {
-            console.error('Error en JSONP:', jsonpError);
+        } catch (error) {
+            console.error('Error en petición:', error);
             
             // Intentar con backup
             const backup = localStorage.getItem('iglesia_backup');
@@ -1047,6 +1099,9 @@ function mostrarConfiguracionModal() {
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Inicializando aplicación...');
+    console.log('Dispositivo móvil:', esMovil);
+    console.log('Protocolo file:', esFileProtocol);
+    console.log('Usando proxy:', usarProxy);
     
     // Cargar configuración guardada
     const configGuardada = localStorage.getItem('sheets_config');
