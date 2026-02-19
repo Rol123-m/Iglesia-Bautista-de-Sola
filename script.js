@@ -2,7 +2,8 @@
 const CONFIG_PREDETERMINADA = {
     BIN_ID: '69961800ae596e708f353340',
     API_KEY: '$2a$10$dIvq0wIoXhyOp0HoP09EretN7mTKeiZPMTyL4LJNpnP7m44LpBwyC',
-    BASE_URL: 'https://api.jsonbin.io/v3'
+    BASE_URL: 'https://api.jsonbin.io/v3',
+    ADMIN_PASSWORD: 'SoloCristo2026' // Puedes cambiarla después
 };
 
 // ==================== VARIABLES GLOBALES ====================
@@ -10,6 +11,8 @@ let CONFIG = { ...CONFIG_PREDETERMINADA };
 let datosCache = null;
 let modalTipoActual = '';
 let itemEditandoId = null;
+let esAdmin = false;
+let notificacionesLeidas = new Set(); // Para recordar qué notificaciones ha visto el usuario
 
 // ==================== DATOS INICIALES ====================
 const datosIniciales = {
@@ -69,6 +72,13 @@ const datosIniciales = {
         { id: 'n4', titulo: 'Devocional familias', descripcion: 'Jarley y Yaneisy', autor: 'Jarley', fecha: '2026-05-21', url: '' },
         { id: 'n5', titulo: 'Liderazgo para Caballeros', descripcion: 'Serie para varones', autor: 'Jarley', fecha: '2026-02-14', url: '' },
         { id: 'n6', titulo: 'Enseñanza para Juveniles', descripcion: 'Identidad en Cristo', autor: 'Michel', fecha: '2026-02-15', url: '' },
+        // Tus sermones
+        { id: 'n7', titulo: 'El Corazón del problema', descripcion: 'Sermón: La raíz de nuestros conflictos', autor: 'Pastor', fecha: '2026-01-15', url: 'https://rol123-m.github.io/El-Coraz%C3%B3n-del-problema/' },
+        { id: 'n8', titulo: 'Los procesos de Dios', descripcion: 'Sermón: El Dios de los procesos', autor: 'Pastor', fecha: '2026-01-22', url: 'https://rol123-m.github.io/Los-procesos-de-Dios-y-el-Dios-de-los-procesos/' },
+        { id: 'n9', titulo: 'Esclavos del Tiempo', descripcion: 'Sermón: Nuestra relación con el tiempo', autor: 'Pastor', fecha: '2026-01-29', url: 'https://rol123-m.github.io/Esclavos-del-Tiempo/' },
+        { id: 'n10', titulo: 'Un ejemplo digno de imitar', descripcion: 'Sermón: Modelos de fe', autor: 'Pastor', fecha: '2026-02-05', url: 'https://rol123-m.github.io/Un-ejemplo-digno-de-imitar/' },
+        { id: 'n11', titulo: 'La Suficiencia de las Escrituras', descripcion: 'Sermón: La Palabra es suficiente', autor: 'Pastor', fecha: '2026-02-12', url: 'https://rol123-m.github.io/La-Suficiencia-de-Las-Escrituras.-/' },
+        { id: 'n12', titulo: 'La singularidad de la Biblia', descripcion: 'Sermón: Un libro único', autor: 'Pastor', fecha: '2026-02-19', url: 'https://rol123-m.github.io/La-singularidad-de-la-Biblia/' },
     ],
     recursos: [
         { id: 'r1', titulo: 'Libro de Cantos', descripcion: 'PDF con himnos', tipo: 'documento', url: '' },
@@ -78,6 +88,278 @@ const datosIniciales = {
         { id: 'r5', titulo: 'Estudio Bíblico - Instituto', descripcion: 'Apuntes del curso', tipo: 'documento', url: '' },
     ]
 };
+
+// ==================== FUNCIONES DE NOTIFICACIONES ====================
+
+function cargarNotificacionesLeidas() {
+    const leidas = localStorage.getItem('notificaciones_leidas');
+    if (leidas) {
+        notificacionesLeidas = new Set(JSON.parse(leidas));
+    }
+}
+
+function guardarNotificacionesLeidas() {
+    localStorage.setItem('notificaciones_leidas', JSON.stringify([...notificacionesLeidas]));
+}
+
+function generarIdNotificacion(tipo, item) {
+    return `${tipo}_${item.id}_${item.fecha}`;
+}
+
+async function obtenerNotificaciones() {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    
+    const eventos = await obtenerEventos();
+    const anuncios = await obtenerAnuncios();
+    
+    const notificaciones = [];
+    
+    // Eventos de hoy
+    eventos.forEach(event => {
+        const fechaEvento = new Date(event.fecha + 'T12:00:00');
+        fechaEvento.setHours(0, 0, 0, 0);
+        
+        if (fechaEvento.getTime() === hoy.getTime()) {
+            notificaciones.push({
+                id: generarIdNotificacion('evento', event),
+                tipo: 'evento',
+                titulo: event.titulo,
+                descripcion: event.descripcion,
+                fecha: event.fecha,
+                hora: event.hora,
+                departamento: event.departamento,
+                leida: notificacionesLeidas.has(generarIdNotificacion('evento', event))
+            });
+        }
+    });
+    
+    // Anuncios de los últimos 3 días
+    const hace3Dias = new Date();
+    hace3Dias.setDate(hace3Dias.getDate() - 3);
+    hace3Dias.setHours(0, 0, 0, 0);
+    
+    anuncios.forEach(anuncio => {
+        const fechaAnuncio = new Date(anuncio.fecha + 'T12:00:00');
+        fechaAnuncio.setHours(0, 0, 0, 0);
+        
+        if (fechaAnuncio >= hace3Dias) {
+            notificaciones.push({
+                id: generarIdNotificacion('anuncio', anuncio),
+                tipo: 'anuncio',
+                titulo: anuncio.titulo,
+                descripcion: anuncio.descripcion,
+                fecha: anuncio.fecha,
+                leida: notificacionesLeidas.has(generarIdNotificacion('anuncio', anuncio))
+            });
+        }
+    });
+    
+    // Ordenar: primero las no leídas, luego por fecha (más recientes primero)
+    notificaciones.sort((a, b) => {
+        if (a.leida !== b.leida) {
+            return a.leida ? 1 : -1; // No leídas primero
+        }
+        return new Date(b.fecha) - new Date(a.fecha);
+    });
+    
+    return notificaciones;
+}
+
+async function actualizarBadgeNotificaciones() {
+    const notificaciones = await obtenerNotificaciones();
+    const noLeidas = notificaciones.filter(n => !n.leida).length;
+    const badge = document.getElementById('notificationBadge');
+    
+    if (noLeidas > 0) {
+        badge.textContent = noLeidas > 9 ? '9+' : noLeidas;
+        badge.style.display = 'flex';
+        
+        // Hacer sonar una campanita (opcional)
+        if (noLeidas > 0 && !window.notificacionSonada) {
+            // Solo para no ser muy intrusivo
+            window.notificacionSonada = true;
+        }
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+async function renderizarPanelNotificaciones() {
+    const notificaciones = await obtenerNotificaciones();
+    const lista = document.getElementById('notificationsList');
+    
+    if (notificaciones.length === 0) {
+        lista.innerHTML = `
+            <div class="notification-empty">
+                <i class="fas fa-bell-slash"></i>
+                <p>No hay notificaciones</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    notificaciones.forEach(notif => {
+        const fecha = new Date(notif.fecha + 'T12:00:00');
+        const fechaStr = fecha.toLocaleDateString('es-ES', { 
+            day: 'numeric', 
+            month: 'short' 
+        });
+        
+        const icono = notif.tipo === 'evento' ? 'fa-calendar-day' : 'fa-bullhorn';
+        const color = notif.tipo === 'evento' ? '#e67e22' : '#17a2b8';
+        
+        html += `
+            <div class="notification-item ${notif.leida ? 'leida' : 'no-leida'}" data-id="${notif.id}">
+                <div class="notification-icon" style="background: ${color}20; color: ${color};">
+                    <i class="fas ${icono}"></i>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">${notif.titulo}</div>
+                    <div class="notification-desc">${notif.descripcion.substring(0, 60)}${notif.descripcion.length > 60 ? '...' : ''}</div>
+                    <div class="notification-meta">
+                        <span><i class="far fa-calendar"></i> ${fechaStr}</span>
+                        ${notif.hora ? `<span><i class="far fa-clock"></i> ${notif.hora}</span>` : ''}
+                    </div>
+                </div>
+                ${!notif.leida ? '<span class="notification-dot"></span>' : ''}
+            </div>
+        `;
+    });
+    
+    lista.innerHTML = html;
+    
+    // Marcar como leídas al hacer click
+    document.querySelectorAll('.notification-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const id = item.dataset.id;
+            marcarNotificacionComoLeida(id);
+        });
+    });
+}
+
+function marcarNotificacionComoLeida(id) {
+    notificacionesLeidas.add(id);
+    guardarNotificacionesLeidas();
+    
+    // Actualizar UI
+    const item = document.querySelector(`.notification-item[data-id="${id}"]`);
+    if (item) {
+        item.classList.remove('no-leida');
+        item.classList.add('leida');
+        const dot = item.querySelector('.notification-dot');
+        if (dot) dot.remove();
+    }
+    
+    actualizarBadgeNotificaciones();
+}
+
+function marcarTodasComoLeidas() {
+    // Obtener todas las notificaciones actuales
+    obtenerNotificaciones().then(notificaciones => {
+        notificaciones.forEach(notif => {
+            notificacionesLeidas.add(notif.id);
+        });
+        guardarNotificacionesLeidas();
+        
+        // Actualizar UI
+        document.querySelectorAll('.notification-item').forEach(item => {
+            item.classList.remove('no-leida');
+            item.classList.add('leida');
+            const dot = item.querySelector('.notification-dot');
+            if (dot) dot.remove();
+        });
+        
+        actualizarBadgeNotificaciones();
+    });
+}
+
+// ==================== FUNCIONES DE AUTENTICACIÓN ====================
+function verificarAdmin() {
+    const sesion = sessionStorage.getItem('iglesia_admin');
+    esAdmin = sesion === 'true';
+    
+    // Actualizar UI según permisos
+    actualizarUIporPermisos();
+    
+    return esAdmin;
+}
+
+function iniciarSesion(password) {
+    cargarConfiguracion(); // Asegurar que tenemos la config actualizada
+    if (password === CONFIG.ADMIN_PASSWORD) {
+        esAdmin = true;
+        sessionStorage.setItem('iglesia_admin', 'true');
+        actualizarUIporPermisos();
+        cerrarLoginModal();
+        mostrarNotificacion('Sesión iniciada como administrador', 'exito');
+        return true;
+    } else {
+        document.getElementById('loginError').style.display = 'block';
+        return false;
+    }
+}
+
+function cerrarSesion() {
+    esAdmin = false;
+    sessionStorage.removeItem('iglesia_admin');
+    actualizarUIporPermisos();
+    mostrarNotificacion('Sesión cerrada', 'exito');
+    
+    // Recargar vistas para ocultar botones de edición
+    const filtroActivo = document.querySelector('.filter-btn.active')?.dataset.filter || 'todos';
+    renderCalendario(filtroActivo);
+    renderAnuncios();
+    renderEnsenanzas(document.getElementById('filtroEnsenanza')?.value || 'todas');
+    renderRecursos();
+}
+
+function actualizarUIporPermisos() {
+    // Mostrar/ocultar elementos solo para admin
+    const adminElements = document.querySelectorAll('.admin-only');
+    adminElements.forEach(el => {
+        if (esAdmin) {
+            el.style.display = 'inline-flex';
+        } else {
+            el.style.display = 'none';
+        }
+    });
+    
+    // Mostrar/ocultar enlace de logout
+    const logoutLink = document.getElementById('logoutLink');
+    const adminLoginLink = document.getElementById('adminLoginLink');
+    
+    if (esAdmin) {
+        if (logoutLink) logoutLink.style.display = 'inline';
+        if (adminLoginLink) adminLoginLink.style.display = 'none';
+        
+        // Ocultar indicador de modo lectura
+        const indicador = document.getElementById('modoIndicador');
+        if (indicador) indicador.style.display = 'none';
+    } else {
+        if (logoutLink) logoutLink.style.display = 'none';
+        if (adminLoginLink) adminLoginLink.style.display = 'inline';
+        
+        // Mostrar indicador de modo lectura
+        const indicador = document.getElementById('modoIndicador');
+        if (indicador) indicador.style.display = 'block';
+    }
+    
+    // Re-renderizar para actualizar botones de edición en tarjetas
+    // Esto se maneja en cada función de render
+}
+
+function mostrarLoginModal() {
+    document.getElementById('loginModal').style.display = 'flex';
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginError').style.display = 'none';
+    document.getElementById('loginPassword').focus();
+}
+
+function cerrarLoginModal() {
+    document.getElementById('loginModal').style.display = 'none';
+}
 
 // ==================== FUNCIONES DE CONFIGURACIÓN ====================
 function cargarConfiguracion() {
@@ -98,105 +380,6 @@ function guardarConfiguracion(nuevaConfig) {
     CONFIG = nuevaConfig;
     localStorage.setItem('iglesia_config', JSON.stringify(nuevaConfig));
     return true;
-}
-
-function mostrarConfiguracionModal() {
-    const config = cargarConfiguracion();
-    
-    // Crear modal de configuración
-    const modalHtml = `
-        <div id="configModal" class="modal" style="display:flex;">
-            <div class="modal-content" style="max-width:500px;">
-                <span class="close-config-modal" style="float:right; font-size:28px; cursor:pointer;">&times;</span>
-                <h2><i class="fas fa-cog"></i> Configuración de JSONBin</h2>
-                <p style="color:#666; margin-bottom:20px;">Estos datos son necesarios para que todos vean los mismos anuncios y enseñanzas.</p>
-                
-                <div class="form-group">
-                    <label>BIN ID:</label>
-                    <input type="text" id="configBinId" value="${config.BIN_ID}" placeholder="Ej: 65abc123def456">
-                    <small style="color:#999;">Lo encuentras en la URL de tu bin en jsonbin.io</small>
-                </div>
-                
-                <div class="form-group">
-                    <label>API Key:</label>
-                    <input type="text" id="configApiKey" value="${config.API_KEY}" placeholder="Ej: $2a$10$...">
-                    <small style="color:#999;">La encuentras en tu perfil de jsonbin.io</small>
-                </div>
-                
-                <div style="display:flex; gap:10px; margin-top:20px;">
-                    <button id="guardarConfigBtn" class="btn-primary" style="flex:2;"><i class="fas fa-save"></i> Guardar Configuración</button>
-                    <button id="probarConfigBtn" class="btn-primary" style="flex:1; background:#17a2b8;"><i class="fas fa-plug"></i> Probar</button>
-                </div>
-                
-                <div id="configResultado" style="margin-top:15px; padding:10px; border-radius:5px; display:none;"></div>
-                
-                <p style="margin-top:20px; font-size:0.9rem; color:#999;">
-                    <i class="fas fa-info-circle"></i> Después de guardar, la página se recargará para aplicar los cambios.
-                </p>
-            </div>
-        </div>
-    `;
-    
-    // Añadir al body
-    const div = document.createElement('div');
-    div.innerHTML = modalHtml;
-    document.body.appendChild(div);
-    
-    // Event listeners
-    document.querySelector('.close-config-modal').addEventListener('click', () => {
-        document.getElementById('configModal').remove();
-    });
-    
-    document.getElementById('probarConfigBtn').addEventListener('click', async () => {
-        const binId = document.getElementById('configBinId').value;
-        const apiKey = document.getElementById('configApiKey').value;
-        const resultado = document.getElementById('configResultado');
-        
-        resultado.style.display = 'block';
-        resultado.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Probando conexión...';
-        resultado.style.background = '#e3f2fd';
-        resultado.style.color = '#0d47a1';
-        
-        try {
-            const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
-                headers: { 'X-Master-Key': apiKey }
-            });
-            
-            if (response.ok) {
-                resultado.innerHTML = '<i class="fas fa-check-circle"></i> ✅ Conexión exitosa! El bin es accesible.';
-                resultado.style.background = '#d4edda';
-                resultado.style.color = '#155724';
-            } else {
-                resultado.innerHTML = '<i class="fas fa-exclamation-circle"></i> ❌ Error: No se pudo acceder al bin. Verifica el ID y la API Key.';
-                resultado.style.background = '#f8d7da';
-                resultado.style.color = '#721c24';
-            }
-        } catch (error) {
-            resultado.innerHTML = '<i class="fas fa-exclamation-circle"></i> ❌ Error de conexión: ' + error.message;
-            resultado.style.background = '#f8d7da';
-            resultado.style.color = '#721c24';
-        }
-    });
-    
-    document.getElementById('guardarConfigBtn').addEventListener('click', () => {
-        const nuevaConfig = {
-            BIN_ID: document.getElementById('configBinId').value,
-            API_KEY: document.getElementById('configApiKey').value,
-            BASE_URL: 'https://api.jsonbin.io/v3'
-        };
-        
-        guardarConfiguracion(nuevaConfig);
-        
-        const resultado = document.getElementById('configResultado');
-        resultado.style.display = 'block';
-        resultado.innerHTML = '<i class="fas fa-check-circle"></i> ✅ Configuración guardada. Recargando página...';
-        resultado.style.background = '#d4edda';
-        resultado.style.color = '#155724';
-        
-        setTimeout(() => {
-            location.reload();
-        }, 1500);
-    });
 }
 
 // ==================== FUNCIONES DE SINCRONIZACIÓN ====================
@@ -226,7 +409,7 @@ async function cargarDatos() {
         return datosCache;
     } catch (error) {
         console.error('Error cargando datos:', error);
-        mostrarNotificacion('Error al conectar con JSONBin. Verifica tu configuración.', 'error');
+        mostrarNotificacion('Error al conectar con JSONBin. Usando datos locales.', 'error');
         document.body.style.cursor = 'default';
         
         // Usar datos de respaldo local
@@ -320,30 +503,55 @@ async function obtenerRecursos() {
 }
 
 async function actualizarEventos(nuevosEventos) {
+    if (!esAdmin) {
+        mostrarNotificacion('No tienes permisos para realizar esta acción', 'error');
+        return false;
+    }
     if (!datosCache) await cargarDatos();
     datosCache.eventos = nuevosEventos;
-    return await guardarDatos(datosCache);
+    const resultado = await guardarDatos(datosCache);
+    if (resultado) actualizarBadgeNotificaciones(); // Actualizar notificaciones
+    return resultado;
 }
 
 async function actualizarAnuncios(nuevosAnuncios) {
+    if (!esAdmin) {
+        mostrarNotificacion('No tienes permisos para realizar esta acción', 'error');
+        return false;
+    }
     if (!datosCache) await cargarDatos();
     datosCache.anuncios = nuevosAnuncios;
-    return await guardarDatos(datosCache);
+    const resultado = await guardarDatos(datosCache);
+    if (resultado) actualizarBadgeNotificaciones(); // Actualizar notificaciones
+    return resultado;
 }
 
 async function actualizarEnsenanzas(nuevasEnsenanzas) {
+    if (!esAdmin) {
+        mostrarNotificacion('No tienes permisos para realizar esta acción', 'error');
+        return false;
+    }
     if (!datosCache) await cargarDatos();
     datosCache.ensenanzas = nuevasEnsenanzas;
     return await guardarDatos(datosCache);
 }
 
 async function actualizarRecursos(nuevosRecursos) {
+    if (!esAdmin) {
+        mostrarNotificacion('No tienes permisos para realizar esta acción', 'error');
+        return false;
+    }
     if (!datosCache) await cargarDatos();
     datosCache.recursos = nuevosRecursos;
     return await guardarDatos(datosCache);
 }
 
 async function eliminarItem(tipo, id) {
+    if (!esAdmin) {
+        mostrarNotificacion('No tienes permisos para realizar esta acción', 'error');
+        return false;
+    }
+    
     let items;
     switch(tipo) {
         case 'eventos':
@@ -367,6 +575,7 @@ async function eliminarItem(tipo, id) {
             await actualizarRecursos(items);
             break;
     }
+    return true;
 }
 
 function generarId(tipo) {
@@ -421,8 +630,14 @@ async function renderCalendario(filtro = 'todos') {
             'instituto': '#6f42c1'
         };
         
+        // Verificar si es hoy para destacarlo
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        const esHoy = fecha.getTime() === hoy.getTime();
+        
         html += `
-            <div class="event-card" style="border-left-color: ${colores[event.departamento] || '#2c3e50'};" data-id="${event.id}">
+            <div class="event-card ${esHoy ? 'evento-hoy' : ''}" style="border-left-color: ${colores[event.departamento] || '#2c3e50'};" data-id="${event.id}">
+                ${esHoy ? '<div class="hoy-badge"><i class="fas fa-bell"></i> HOY</div>' : ''}
                 <div class="event-date"><i class="far fa-calendar-alt"></i> ${fechaStr}</div>
                 <h3 class="event-title">${event.titulo}</h3>
                 <span class="event-department" style="background: ${colores[event.departamento] || '#2c3e50'}; color: white;">
@@ -433,6 +648,7 @@ async function renderCalendario(filtro = 'todos') {
                     ${event.hora ? `<span><i class="far fa-clock"></i> ${event.hora}</span>` : ''}
                     ${event.responsable ? `<span><i class="fas fa-user"></i> ${event.responsable}</span>` : ''}
                 </div>
+                ${esAdmin ? `
                 <div class="card-actions" style="margin-top:10px; border-top:1px solid #eee; padding-top:10px;">
                     <button class="edit-evento" data-id="${event.id}" style="background:none; border:none; color:#007bff; cursor:pointer; margin-right:10px;">
                         <i class="fas fa-edit"></i> Editar
@@ -441,6 +657,7 @@ async function renderCalendario(filtro = 'todos') {
                         <i class="fas fa-trash"></i> Eliminar
                     </button>
                 </div>
+                ` : ''}
             </div>
         `;
     });
@@ -451,25 +668,27 @@ async function renderCalendario(filtro = 'todos') {
     
     grid.innerHTML = html;
     
-    // Asignar eventos a botones
-    document.querySelectorAll('.delete-evento').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            if (confirm('¿Estás seguro de eliminar este evento?')) {
+    // Asignar eventos a botones solo si es admin
+    if (esAdmin) {
+        document.querySelectorAll('.delete-evento').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                if (confirm('¿Estás seguro de eliminar este evento?')) {
+                    const id = e.currentTarget.dataset.id;
+                    await eliminarItem('eventos', id);
+                    await renderCalendario(filtro);
+                }
+            });
+        });
+        
+        document.querySelectorAll('.edit-evento').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 const id = e.currentTarget.dataset.id;
-                await eliminarItem('eventos', id);
-                await renderCalendario(filtro);
-            }
+                abrirModalEvento(id);
+            });
         });
-    });
-    
-    document.querySelectorAll('.edit-evento').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const id = e.currentTarget.dataset.id;
-            abrirModalEvento(id);
-        });
-    });
+    }
 }
 
 // ==================== RENDERIZAR ANUNCIOS ====================
@@ -481,16 +700,31 @@ async function renderAnuncios() {
     
     let html = '';
     anuncios.forEach(anuncio => {
+        // Verificar si es reciente (últimos 3 días)
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        const fechaAnuncio = new Date(anuncio.fecha + 'T12:00:00');
+        fechaAnuncio.setHours(0, 0, 0, 0);
+        
+        const hace3Dias = new Date();
+        hace3Dias.setDate(hace3Dias.getDate() - 3);
+        hace3Dias.setHours(0, 0, 0, 0);
+        
+        const esReciente = fechaAnuncio >= hace3Dias;
+        
         html += `
-            <div class="card" data-id="${anuncio.id}">
+            <div class="card ${esReciente ? 'anuncio-reciente' : ''}" data-id="${anuncio.id}">
+                ${esReciente ? '<span class="nuevo-badge"><i class="fas fa-bell"></i> NUEVO</span>' : ''}
                 <h3>${anuncio.titulo}</h3>
                 <p>${anuncio.descripcion}</p>
                 <div class="card-meta">
                     <span><i class="far fa-calendar"></i> ${anuncio.fecha}</span>
+                    ${esAdmin ? `
                     <div class="card-actions">
                         <button class="edit-anuncio" data-id="${anuncio.id}"><i class="fas fa-edit"></i></button>
                         <button class="delete-anuncio" data-id="${anuncio.id}"><i class="fas fa-trash"></i></button>
                     </div>
+                    ` : ''}
                 </div>
             </div>
         `;
@@ -498,22 +732,24 @@ async function renderAnuncios() {
     
     container.innerHTML = html;
     
-    document.querySelectorAll('.delete-anuncio').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            if (confirm('¿Eliminar este anuncio?')) {
+    if (esAdmin) {
+        document.querySelectorAll('.delete-anuncio').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                if (confirm('¿Eliminar este anuncio?')) {
+                    const id = e.currentTarget.dataset.id;
+                    await eliminarItem('anuncios', id);
+                    await renderAnuncios();
+                }
+            });
+        });
+        
+        document.querySelectorAll('.edit-anuncio').forEach(btn => {
+            btn.addEventListener('click', (e) => {
                 const id = e.currentTarget.dataset.id;
-                await eliminarItem('anuncios', id);
-                await renderAnuncios();
-            }
+                abrirModalAnuncio(id);
+            });
         });
-    });
-    
-    document.querySelectorAll('.edit-anuncio').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.dataset.id;
-            abrirModalAnuncio(id);
-        });
-    });
+    }
 }
 
 // ==================== RENDERIZAR ENSEÑANZAS ====================
@@ -536,11 +772,13 @@ async function renderEnsenanzas(filtro = 'todas') {
                 <p><strong>${ens.autor}</strong> · ${ens.fecha}</p>
                 <p>${ens.descripcion}</p>
                 <div class="card-meta">
-                    ${ens.url ? `<a href="${ens.url}" target="_blank"><i class="fas fa-external-link-alt"></i> Ver</a>` : '<span>Sin enlace</span>'}
+                    ${ens.url ? `<a href="${ens.url}" target="_blank"><i class="fas fa-external-link-alt"></i> Ver sermón</a>` : '<span>Sin enlace</span>'}
+                    ${esAdmin ? `
                     <div class="card-actions">
                         <button class="edit-ensenanza" data-id="${ens.id}"><i class="fas fa-edit"></i></button>
                         <button class="delete-ensenanza" data-id="${ens.id}"><i class="fas fa-trash"></i></button>
                     </div>
+                    ` : ''}
                 </div>
             </div>
         `;
@@ -548,22 +786,24 @@ async function renderEnsenanzas(filtro = 'todas') {
     
     container.innerHTML = html;
     
-    document.querySelectorAll('.delete-ensenanza').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            if (confirm('¿Eliminar esta enseñanza?')) {
+    if (esAdmin) {
+        document.querySelectorAll('.delete-ensenanza').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                if (confirm('¿Eliminar esta enseñanza?')) {
+                    const id = e.currentTarget.dataset.id;
+                    await eliminarItem('ensenanzas', id);
+                    await renderEnsenanzas(document.getElementById('filtroEnsenanza').value);
+                }
+            });
+        });
+        
+        document.querySelectorAll('.edit-ensenanza').forEach(btn => {
+            btn.addEventListener('click', (e) => {
                 const id = e.currentTarget.dataset.id;
-                await eliminarItem('ensenanzas', id);
-                await renderEnsenanzas(document.getElementById('filtroEnsenanza').value);
-            }
+                abrirModalEnsenanza(id);
+            });
         });
-    });
-    
-    document.querySelectorAll('.edit-ensenanza').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.dataset.id;
-            abrirModalEnsenanza(id);
-        });
-    });
+    }
 }
 
 // ==================== RENDERIZAR RECURSOS ====================
@@ -581,10 +821,12 @@ async function renderRecursos() {
                 <p>${recurso.descripcion}</p>
                 <div class="card-meta">
                     ${recurso.url ? `<a href="${recurso.url}" target="_blank"><i class="fas fa-download"></i> Descargar</a>` : '<span>Sin archivo</span>'}
+                    ${esAdmin ? `
                     <div class="card-actions">
                         <button class="edit-recurso" data-id="${recurso.id}"><i class="fas fa-edit"></i></button>
                         <button class="delete-recurso" data-id="${recurso.id}"><i class="fas fa-trash"></i></button>
                     </div>
+                    ` : ''}
                 </div>
             </div>
         `;
@@ -592,26 +834,34 @@ async function renderRecursos() {
     
     container.innerHTML = html;
     
-    document.querySelectorAll('.delete-recurso').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            if (confirm('¿Eliminar este recurso?')) {
+    if (esAdmin) {
+        document.querySelectorAll('.delete-recurso').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                if (confirm('¿Eliminar este recurso?')) {
+                    const id = e.currentTarget.dataset.id;
+                    await eliminarItem('recursos', id);
+                    await renderRecursos();
+                }
+            });
+        });
+        
+        document.querySelectorAll('.edit-recurso').forEach(btn => {
+            btn.addEventListener('click', (e) => {
                 const id = e.currentTarget.dataset.id;
-                await eliminarItem('recursos', id);
-                await renderRecursos();
-            }
+                abrirModalRecurso(id);
+            });
         });
-    });
-    
-    document.querySelectorAll('.edit-recurso').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.dataset.id;
-            abrirModalRecurso(id);
-        });
-    });
+    }
 }
 
 // ==================== MODALES ====================
 function abrirModal(titulo, tipo, item = null) {
+    if (!esAdmin) {
+        mostrarNotificacion('Debes iniciar sesión como administrador', 'error');
+        mostrarLoginModal();
+        return;
+    }
+    
     modalTipoActual = tipo;
     itemEditandoId = item?.id || null;
     
@@ -747,6 +997,13 @@ async function abrirModalRecurso(id = null) {
 document.getElementById('modal-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    if (!esAdmin) {
+        cerrarModal();
+        mostrarNotificacion('Debes iniciar sesión como administrador', 'error');
+        mostrarLoginModal();
+        return;
+    }
+    
     const tipo = modalTipoActual;
     const id = itemEditandoId || generarId(tipo + 's');
     const titulo = document.getElementById('item-titulo').value;
@@ -825,11 +1082,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Cargar configuración
     cargarConfiguracion();
     
-    // Añadir botón de configuración al header
+    // Cargar notificaciones leídas
+    cargarNotificacionesLeidas();
+    
+    // Verificar si hay sesión activa
+    verificarAdmin();
+    
+    // Añadir botón de configuración al header (solo visible para admin)
     const header = document.querySelector('.header .container');
     if (header) {
         const configBtn = document.createElement('button');
-        configBtn.innerHTML = '<i class="fas fa-cog"></i> Configurar JSONBin';
+        configBtn.innerHTML = '<i class="fas fa-cog"></i> Configurar';
         configBtn.style.position = 'absolute';
         configBtn.style.top = '20px';
         configBtn.style.right = '20px';
@@ -840,6 +1103,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         configBtn.style.borderRadius = '20px';
         configBtn.style.cursor = 'pointer';
         configBtn.style.fontSize = '0.9rem';
+        configBtn.classList.add('admin-only');
+        configBtn.style.display = esAdmin ? 'block' : 'none';
         configBtn.addEventListener('click', mostrarConfiguracionModal);
         
         header.style.position = 'relative';
@@ -856,6 +1121,65 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error inicial:', error);
     }
     
+    // Eventos de login
+    document.getElementById('adminLoginLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        mostrarLoginModal();
+    });
+    
+    document.getElementById('logoutLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        cerrarSesion();
+    });
+    
+    document.getElementById('loginBtn').addEventListener('click', () => {
+        const password = document.getElementById('loginPassword').value;
+        iniciarSesion(password);
+    });
+    
+    document.getElementById('loginCancelBtn').addEventListener('click', () => {
+        cerrarLoginModal();
+    });
+    
+    document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            document.getElementById('loginBtn').click();
+        }
+    });
+    
+    // Cerrar modal de login al hacer click fuera
+    window.addEventListener('click', (e) => {
+        const modal = document.getElementById('loginModal');
+        if (e.target === modal) {
+            cerrarLoginModal();
+        }
+    });
+    
+    // Eventos de notificaciones
+    const bell = document.getElementById('notificationBell');
+    const panel = document.getElementById('notificationPanel');
+    
+    bell.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (panel.style.display === 'block') {
+            panel.style.display = 'none';
+        } else {
+            renderizarPanelNotificaciones();
+            panel.style.display = 'block';
+        }
+    });
+    
+    document.getElementById('markAllRead').addEventListener('click', () => {
+        marcarTodasComoLeidas();
+    });
+    
+    // Cerrar panel al hacer click fuera
+    document.addEventListener('click', (e) => {
+        if (!bell.contains(e.target) && !panel.contains(e.target)) {
+            panel.style.display = 'none';
+        }
+    });
+    
     // Pestañas
     document.querySelectorAll('.tab-button').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -868,21 +1192,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
     
-    // Filtros calendario - ACTUALIZADO con nuevos departamentos
+    // Filtros calendario
     const filterContainer = document.querySelector('.calendar-filters');
     if (filterContainer) {
-        filterContainer.innerHTML = `
-            <button class="filter-btn active" data-filter="todos">Todos</button>
-            <button class="filter-btn" data-filter="iglesia"><i class="fas fa-users"></i> Iglesia General</button>
-            <button class="filter-btn" data-filter="damas"><i class="fas fa-female"></i> Damas</button>
-            <button class="filter-btn" data-filter="jovenes"><i class="fas fa-user-graduate"></i> Jóvenes</button>
-            <button class="filter-btn" data-filter="juveniles"><i class="fas fa-child"></i> Juveniles</button>
-            <button class="filter-btn" data-filter="infantil"><i class="fas fa-baby"></i> Infantil</button>
-            <button class="filter-btn" data-filter="caballeros"><i class="fas fa-male"></i> Caballeros</button>
-            <button class="filter-btn" data-filter="instituto"><i class="fas fa-book"></i> Instituto</button>
-            <button id="nuevoEventoBtn" class="btn-primary" style="margin-left:auto;"><i class="fas fa-plus"></i> Nuevo Evento</button>
-        `;
-        
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 if (e.target.id === 'nuevoEventoBtn') return;
@@ -898,20 +1210,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Filtro enseñanzas
     const filtroEnsenanza = document.getElementById('filtroEnsenanza');
     if (filtroEnsenanza) {
-        // Actualizar opciones del filtro de enseñanzas
-        filtroEnsenanza.innerHTML = `
-            <option value="todas">Todas</option>
-            <option value="Pastor">Pastor</option>
-            <option value="Pastora">Pastora</option>
-            <option value="Jarley">Jarley</option>
-            <option value="Marice">Marice</option>
-            <option value="Michel">Michel</option>
-            <option value="Jóvenes">Jóvenes</option>
-            <option value="Damas">Damas</option>
-            <option value="Caballeros">Caballeros</option>
-            <option value="Infantil">Infantil</option>
-        `;
-        
         filtroEnsenanza.addEventListener('change', (e) => {
             renderEnsenanzas(e.target.value);
         });
@@ -922,7 +1220,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('nuevaEnsenanzaBtn')?.addEventListener('click', () => abrirModalEnsenanza());
     document.getElementById('nuevoRecursoBtn')?.addEventListener('click', () => abrirModalRecurso());
     
-    // Cerrar modal
+    // Cerrar modal principal
     document.querySelector('.close-modal')?.addEventListener('click', cerrarModal);
     window.addEventListener('click', (e) => {
         if (e.target === document.getElementById('modal')) {
@@ -935,9 +1233,81 @@ document.addEventListener('DOMContentLoaded', async () => {
     await renderAnuncios();
     await renderEnsenanzas('todas');
     await renderRecursos();
+    
+    // Actualizar badge de notificaciones
+    await actualizarBadgeNotificaciones();
+    
+    // Verificar notificaciones cada 5 minutos
+    setInterval(async () => {
+        await actualizarBadgeNotificaciones();
+    }, 300000); // 5 minutos
 });
 
-// Añadir estilos de animación
+// Función para mostrar modal de configuración
+function mostrarConfiguracionModal() {
+    if (!esAdmin) {
+        mostrarNotificacion('Debes ser administrador', 'error');
+        return;
+    }
+    
+    const config = cargarConfiguracion();
+    
+    const modalHtml = `
+        <div id="configModal" class="modal" style="display:flex;">
+            <div class="modal-content" style="max-width:500px;">
+                <span class="close-config-modal" style="float:right; font-size:28px; cursor:pointer;">&times;</span>
+                <h2><i class="fas fa-cog"></i> Configuración</h2>
+                
+                <div class="form-group">
+                    <label>BIN ID:</label>
+                    <input type="text" id="configBinId" value="${config.BIN_ID}">
+                </div>
+                
+                <div class="form-group">
+                    <label>API Key:</label>
+                    <input type="text" id="configApiKey" value="${config.API_KEY}">
+                </div>
+                
+                <div class="form-group">
+                    <label>Contraseña de Admin:</label>
+                    <input type="text" id="configPassword" value="${config.ADMIN_PASSWORD}">
+                    <small style="color:#999;">Cambia la contraseña para acceso de líderes</small>
+                </div>
+                
+                <button id="guardarConfigBtn" class="btn-primary"><i class="fas fa-save"></i> Guardar Configuración</button>
+                <div id="configResultado" style="margin-top:15px;"></div>
+            </div>
+        </div>
+    `;
+    
+    const div = document.createElement('div');
+    div.innerHTML = modalHtml;
+    document.body.appendChild(div);
+    
+    document.querySelector('.close-config-modal').addEventListener('click', () => {
+        document.getElementById('configModal').remove();
+    });
+    
+    document.getElementById('guardarConfigBtn').addEventListener('click', () => {
+        const nuevaConfig = {
+            BIN_ID: document.getElementById('configBinId').value,
+            API_KEY: document.getElementById('configApiKey').value,
+            BASE_URL: 'https://api.jsonbin.io/v3',
+            ADMIN_PASSWORD: document.getElementById('configPassword').value
+        };
+        
+        guardarConfiguracion(nuevaConfig);
+        
+        const resultado = document.getElementById('configResultado');
+        resultado.innerHTML = '<p style="color:green;">✅ Configuración guardada. Recargando...</p>';
+        
+        setTimeout(() => {
+            location.reload();
+        }, 1500);
+    });
+}
+
+// Añadir estilos adicionales
 const style = document.createElement('style');
 style.textContent = `
     @keyframes slideIn {
@@ -947,6 +1317,93 @@ style.textContent = `
     @keyframes slideOut {
         from { transform: translateX(0); opacity: 1; }
         to { transform: translateX(100%); opacity: 0; }
+    }
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+    
+    .modo-lectura {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #2c3e50;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        z-index: 999;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .no-results {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+        font-size: 1.1rem;
+    }
+    
+    /* Estilos para el badge de HOY en eventos */
+    .evento-hoy {
+        position: relative;
+        border: 2px solid #e67e22 !important;
+        box-shadow: 0 0 15px rgba(230, 126, 34, 0.3);
+    }
+    
+    .hoy-badge {
+        position: absolute;
+        top: -10px;
+        right: 10px;
+        background: #e67e22;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        animation: pulse 2s infinite;
+    }
+    
+    .hoy-badge i {
+        margin-right: 5px;
+    }
+    
+    /* Estilos para badge NUEVO en anuncios */
+    .anuncio-reciente {
+        position: relative;
+    }
+    
+    .nuevo-badge {
+        position: absolute;
+        top: -10px;
+        right: 10px;
+        background: #17a2b8;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        animation: pulse 2s infinite;
+    }
+    
+    .nuevo-badge i {
+        margin-right: 5px;
     }
 `;
 document.head.appendChild(style);
