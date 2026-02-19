@@ -1,6 +1,6 @@
 // ==================== CONFIGURACIÓN ====================
 const SHEETS_CONFIG = {
-    URL: 'https://script.google.com/macros/s/AKfycbzCPjl7PyhU3Xs63UQyHMEnBxbwXi6hTTMCP5BqMxFXkIk3NuLoP6VIie8vGrtnc4uW/exec',
+    URL: 'https://script.google.com/macros/s/AKfycbyWjscPxfMmUNUC1rH3wXLPdedKR2reFEB3gmuJeQyFyqxCDjUwWUPICPibKVG_QhYo/exec',
     ADMIN_PASSWORD: 'SoloCristo2026'
 };
 
@@ -10,24 +10,12 @@ let modalTipoActual = '';
 let itemEditandoId = null;
 let esAdmin = false;
 let notificacionesLeidas = new Set();
-let peticionEnProgreso = false;
-let contadorPeticiones = 0;
 
-// ==================== FUNCIÓN PRINCIPAL PARA GOOGLE SHEETS (JSONP) ====================
+// ==================== FUNCIÓN PRINCIPAL PARA GOOGLE SHEETS (JSONP MEJORADO) ====================
 
 function peticionSheets(accion, datos = null, tipo = null, id = null, password = null) {
     return new Promise((resolve, reject) => {
         try {
-            // Evitar peticiones múltiples
-            if (peticionEnProgreso) {
-                console.log('Petición en progreso, esperando...');
-                setTimeout(() => resolve(peticionSheets(accion, datos, tipo, id, password)), 500);
-                return;
-            }
-            
-            peticionEnProgreso = true;
-            contadorPeticiones++;
-            
             // Construir URL con parámetros
             let url = SHEETS_CONFIG.URL + '?accion=' + encodeURIComponent(accion);
             url += '&_=' + Date.now(); // Evitar caché
@@ -38,7 +26,7 @@ function peticionSheets(accion, datos = null, tipo = null, id = null, password =
             if (password) url += '&password=' + encodeURIComponent(password);
             
             // Callback único
-            const callbackName = 'jsonp_cb_' + Date.now() + '_' + contadorPeticiones;
+            const callbackName = 'jsonp_cb_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             url += '&callback=' + callbackName;
             
             console.log('JSONP Request:', url);
@@ -46,14 +34,16 @@ function peticionSheets(accion, datos = null, tipo = null, id = null, password =
             // Crear script
             const script = document.createElement('script');
             script.src = url;
+            script.async = true;
             
-            // Timeout
+            // Timeout más largo para móviles
             const timeout = setTimeout(() => {
                 delete window[callbackName];
-                document.body.removeChild(script);
-                peticionEnProgreso = false;
-                reject(new Error('Timeout'));
-            }, 10000);
+                if (document.body.contains(script)) {
+                    document.body.removeChild(script);
+                }
+                reject(new Error('Tiempo de espera agotado'));
+            }, 30000); // 30 segundos para móviles lentos
             
             // Callback global
             window[callbackName] = function(data) {
@@ -62,7 +52,6 @@ function peticionSheets(accion, datos = null, tipo = null, id = null, password =
                 if (document.body.contains(script)) {
                     document.body.removeChild(script);
                 }
-                peticionEnProgreso = false;
                 
                 if (data && data.error) {
                     reject(new Error(data.error));
@@ -75,15 +64,15 @@ function peticionSheets(accion, datos = null, tipo = null, id = null, password =
             script.onerror = function() {
                 clearTimeout(timeout);
                 delete window[callbackName];
-                document.body.removeChild(script);
-                peticionEnProgreso = false;
+                if (document.body.contains(script)) {
+                    document.body.removeChild(script);
+                }
                 reject(new Error('Error de conexión'));
             };
             
             document.body.appendChild(script);
             
         } catch (error) {
-            peticionEnProgreso = false;
             reject(error);
         }
     });
@@ -96,29 +85,51 @@ async function cargarDatos() {
         document.body.style.cursor = 'wait';
         console.log('Cargando datos desde Google Sheets...');
         
-        const respuesta = await peticionSheets('leer');
-        console.log('Respuesta recibida:', respuesta);
-        
-        if (respuesta && respuesta.eventos) {
-            datosCache = respuesta;
+        // Intentar con JSONP
+        try {
+            const respuesta = await peticionSheets('leer');
+            console.log('Respuesta recibida:', respuesta);
             
-            // Guardar backup local
-            localStorage.setItem('iglesia_backup', JSON.stringify(respuesta));
+            if (respuesta && respuesta.eventos) {
+                datosCache = respuesta;
+                
+                // Guardar backup local
+                localStorage.setItem('iglesia_backup', JSON.stringify(respuesta));
+                
+                // Guardar timestamp de última actualización
+                localStorage.setItem('iglesia_last_update', Date.now().toString());
+                
+                // Actualizar contraseña si viene en la respuesta
+                if (respuesta.config && respuesta.config.admin_password) {
+                    SHEETS_CONFIG.ADMIN_PASSWORD = respuesta.config.admin_password;
+                }
+                
+                document.body.style.cursor = 'default';
+                mostrarNotificacion('Datos cargados correctamente', 'exito');
+                return datosCache;
+            } else {
+                throw new Error('Formato de respuesta inválido');
+            }
+        } catch (jsonpError) {
+            console.error('Error en JSONP:', jsonpError);
             
-            // Actualizar contraseña si viene en la respuesta
-            if (respuesta.config && respuesta.config.admin_password) {
-                SHEETS_CONFIG.ADMIN_PASSWORD = respuesta.config.admin_password;
+            // Intentar con backup
+            const backup = localStorage.getItem('iglesia_backup');
+            if (backup) {
+                datosCache = JSON.parse(backup);
+                document.body.style.cursor = 'default';
+                mostrarNotificacion('Usando datos guardados localmente', 'info');
+                return datosCache;
             }
             
+            // Si no hay backup, usar datos iniciales
+            datosCache = datosIniciales;
             document.body.style.cursor = 'default';
-            mostrarNotificacion('Datos cargados correctamente', 'exito');
-            return datosCache;
-        } else {
-            throw new Error('Formato de respuesta inválido');
+            mostrarNotificacion('Usando datos de respaldo', 'info');
+            return datosIniciales;
         }
     } catch (error) {
         console.error('Error cargando datos:', error);
-        mostrarNotificacion('Usando datos de respaldo local', 'error');
         document.body.style.cursor = 'default';
         
         // Usar backup local o datos iniciales
@@ -187,8 +198,7 @@ async function eliminarItem(tipo, id) {
             
             // Actualizar cache local
             if (datosCache) {
-                const lista = tipo;
-                datosCache[lista] = datosCache[lista].filter(i => i.id !== id);
+                datosCache[tipo] = datosCache[tipo].filter(i => i.id !== id);
                 localStorage.setItem('iglesia_backup', JSON.stringify(datosCache));
             }
             
@@ -967,8 +977,8 @@ function mostrarNotificacion(mensaje, tipo = 'exito') {
     notificacion.style.zIndex = '9999';
     notificacion.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
     notificacion.style.animation = 'slideIn 0.3s ease';
-    notificacion.style.background = tipo === 'exito' ? '#28a745' : '#dc3545';
-    notificacion.innerHTML = `<i class="fas ${tipo === 'exito' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${mensaje}`;
+    notificacion.style.background = tipo === 'exito' ? '#28a745' : tipo === 'info' ? '#17a2b8' : '#dc3545';
+    notificacion.innerHTML = `<i class="fas ${tipo === 'exito' ? 'fa-check-circle' : tipo === 'info' ? 'fa-info-circle' : 'fa-exclamation-circle'}"></i> ${mensaje}`;
     
     document.body.appendChild(notificacion);
     
