@@ -4,185 +4,1967 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iglesia Solo Cristo Salva - Administración</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Font Awesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ==================== TU CSS AQUÍ ==================== */
+        /* Copia todo tu CSS existente aquí */
+        :root {
+            --primary: #2c3e50;
+            --primary-light: #34495e;
+            --accent: #e67e22;
+            --accent-light: #f39c12;
+            --text-light: #ecf0f1;
+            --text-dark: #2c3e50;
+            --bg-light: #f5f6fa;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.15);
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+        
+        /* ==================== HEADER ==================== */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--text-light);
+            padding: 2rem 0;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+        
+        .header .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .header h1 i {
+            color: var(--accent-light);
+        }
+        
+        .subtitle {
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            opacity: 0.9;
+        }
+        
+        .config-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 10;
+        }
+        
+        .config-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* ==================== NOTIFICACIONES ==================== */
+        .notification-wrapper {
+            position: relative;
+            margin: 10px 0 0;
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .notification-bell-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .notification-bell {
+            background: var(--accent);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .notification-bell:hover {
+            background: var(--accent-light);
+            transform: scale(1.05);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            min-width: 22px;
+            height: 22px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 2px solid white;
+            animation: pulse 2s infinite;
+            padding: 0 4px;
+        }
+        
+        .notification-panel {
+            position: absolute;
+            top: 55px;
+            right: 0;
+            width: 350px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .notification-header {
+            padding: 15px 20px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .notification-header h3 {
+            font-size: 1rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .mark-read-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        
+        .mark-read-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .notifications-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .notification-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            gap: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .notification-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .notification-item.no-leida {
+            background: #f0f7ff;
+        }
+        
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: var(--primary);
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .notification-desc {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 5px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .notification-meta {
+            font-size: 0.7rem;
+            color: #999;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .notification-meta i {
+            margin-right: 3px;
+        }
+        
+        .notification-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            flex-shrink: 0;
+        }
+        
+        .notification-empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: #999;
+        }
+        
+        .notification-empty i {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #ddd;
+        }
+        
+        /* ==================== NAVEGACIÓN ==================== */
+        .tab-nav {
+            display: flex;
+            gap: 10px;
+            margin: 30px auto;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tab-button {
+            padding: 12px 24px;
+            border: none;
+            background: white;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 0 1 auto;
+        }
+        
+        .tab-button i {
+            font-size: 1.1rem;
+        }
+        
+        .tab-button.active {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .tab-button:hover {
+            background: var(--accent-light);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        /* ==================== FILTROS ==================== */
+        .calendar-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--primary);
+            background: transparent;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary);
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .filter-btn i {
+            font-size: 0.9rem;
+        }
+        
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .filter-btn:hover:not(.active) {
+            background: rgba(44, 62, 80, 0.1);
+        }
+        
+        /* ==================== GRIDS ==================== */
+        .calendar-grid,
+        .anuncios-grid,
+        .ensenanzas-grid,
+        .recursos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        /* ==================== TARJETAS ==================== */
+        .event-card,
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            border-left: 5px solid transparent;
+        }
+        
+        .event-card:hover,
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .hoy-badge,
+        .nuevo-badge {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            animation: pulse 2s infinite;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        
+        .hoy-badge {
+            background: #e67e22;
+        }
+        
+        .nuevo-badge {
+            background: #17a2b8;
+        }
+        
+        .evento-hoy {
+            border: 2px solid #e67e22 !important;
+            box-shadow: 0 0 15px rgba(230, 126, 34, 0.2);
+        }
+        
+        .anuncio-reciente {
+            border: 2px solid #17a2b8 !important;
+        }
+        
+        .event-date {
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 8px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .event-title {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--primary);
+            padding-right: 60px;
+        }
+        
+        .card h3 {
+            margin-bottom: 10px;
+            color: var(--primary);
+            font-size: 1.2rem;
+            padding-right: 60px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .event-department {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 8px 0;
+            color: white;
+        }
+        
+        .event-description,
+        .card p {
+            color: #555;
+            margin: 8px 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .event-meta {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #777;
+            flex-wrap: wrap;
+        }
+        
+        .event-meta i {
+            margin-right: 5px;
+            width: 16px;
+        }
+        
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #888;
+            font-size: 0.85rem;
+            border-top: 1px solid #eee;
+            padding-top: 12px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .card-meta a {
+            color: var(--accent);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+        }
+        
+        .card-meta a:hover {
+            color: var(--accent-light);
+            text-decoration: underline;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .card-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #777;
+            transition: var(--transition);
+            padding: 5px;
+        }
+        
+        .card-actions button:hover {
+            color: var(--accent);
+        }
+        
+        .delete-btn:hover {
+            color: #dc3545 !important;
+        }
+        
+        /* ==================== BARRA DE ADMIN ==================== */
+        .admin-toolbar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .btn-primary,
+        .btn-secondary {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-light);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .filtro-select {
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 2px solid var(--primary);
+            font-weight: 500;
+            background: white;
+            font-size: 0.95rem;
+            min-width: 150px;
+        }
+        
+        /* ==================== MODALES ==================== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+            backdrop-filter: blur(3px);
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+            line-height: 1;
+            transition: var(--transition);
+            z-index: 10;
+        }
+        
+        .close-modal:hover {
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+        
+        .btn-submit {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .btn-submit:hover {
+            background: var(--accent-light);
+        }
+        
+        /* ==================== MODO LECTURA ==================== */
+        .modo-lectura {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            z-index: 9999;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .modo-lectura i {
+            color: #ffc107;
+        }
+        
+        /* ==================== FOOTER ==================== */
+        .footer {
+            background: var(--primary);
+            color: var(--text-light);
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: 50px;
+        }
+        
+        .footer a {
+            color: white;
+            text-decoration: underline;
+            transition: var(--transition);
+        }
+        
+        .footer a:hover {
+            color: var(--accent-light);
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+            font-size: 1.1rem;
+            grid-column: 1 / -1;
+        }
+        
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+        
+        .admin-only {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .tab-button {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+            
+            .calendar-grid,
+            .anuncios-grid,
+            .ensenanzas-grid,
+            .recursos-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-toolbar {
+                flex-direction: column;
+            }
+            
+            .notification-panel {
+                width: 100%;
+                right: 0;
+            }
+        }
+    </style>
 </head>
 <body>
     <header class="header">
         <div class="container">
-            <h1><i class="fas fa-church"></i> Iglesia Bautista "Solo Cristo Salva"</h1>
-            <p class="subtitle">Planificación y Recursos · Febrero - Mayo 2026</p>
+            <button class="config-btn" id="adminLoginLink">
+                <i class="fas fa-cog"></i> Admin
+            </button>
+            <button class="config-btn" id="logoutLink" style="display: none;">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </button>
+            
+            <h1>
+                <i class="fas fa-church"></i> 
+                Iglesia Solo Cristo Salva
+            </h1>
+            <p class="subtitle">Sistema de Administración</p>
+            
+            <div class="notification-wrapper">
+                <div class="notification-bell-container">
+                    <button class="notification-bell" id="notificationBell">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
+                
+                <div class="notification-panel" id="notificationPanel">
+                    <div class="notification-header">
+                        <h3><i class="fas fa-bell"></i> Notificaciones</h3>
+                        <button class="mark-read-btn" id="markAllRead">
+                            <i class="fas fa-check-double"></i> Marcar todas
+                        </button>
+                    </div>
+                    <div class="notifications-list" id="notificationsList">
+                        <div class="notification-empty">
+                            <i class="fas fa-bell-slash"></i>
+                            <p>Cargando notificaciones...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
-    <nav class="tab-nav container">
-        <button class="tab-button active" data-tab="calendario"><i class="fas fa-calendar-alt"></i> Calendario</button>
-        <button class="tab-button" data-tab="anuncios"><i class="fas fa-bullhorn"></i> Anuncios</button>
-        <button class="tab-button" data-tab="ensenanzas"><i class="fas fa-bible"></i> Enseñanzas</button>
-        <button class="tab-button" data-tab="recursos"><i class="fas fa-folder-open"></i> Recursos</button>
-    </nav>
-
-    <!-- Después del nav, antes del main -->
-<div class="notification-bell-container">
-    <button id="notificationBell" class="notification-bell">
-        <i class="fas fa-bell"></i>
-        <span id="notificationBadge" class="notification-badge" style="display:none;">0</span>
-    </button>
-    <div id="notificationPanel" class="notification-panel" style="display:none;">
-        <div class="notification-header">
-            <h3><i class="fas fa-bell"></i> Notificaciones</h3>
-            <button id="markAllRead" class="mark-read-btn"><i class="fas fa-check-double"></i> Marcar todas como leídas</button>
-        </div>
-        <div id="notificationsList" class="notifications-list">
-            <!-- Las notificaciones se cargarán aquí -->
-        </div>
+    <div class="modo-lectura" id="modoIndicador">
+        <i class="fas fa-eye"></i> Modo Lectura
     </div>
-</div>
 
     <main class="container">
-        <!-- PESTAÑA CALENDARIO -->
-        <section id="calendario" class="tab-content active">
-            <div class="calendar-filters">
-                <button class="filter-btn active" data-filter="todos">Todos</button>
-                <button class="filter-btn" data-filter="iglesia"><i class="fas fa-users"></i> Iglesia General</button>
-                <button class="filter-btn" data-filter="damas"><i class="fas fa-female"></i> Damas</button>
-                <button class="filter-btn" data-filter="jovenes"><i class="fas fa-user-graduate"></i> Jóvenes</button>
-                <button class="filter-btn" data-filter="juveniles"><i class="fas fa-child"></i> Juveniles</button>
-                <button class="filter-btn" data-filter="infantil"><i class="fas fa-baby"></i> Infantil</button>
-                <button class="filter-btn" data-filter="caballeros"><i class="fas fa-male"></i> Caballeros</button>
-                <button class="filter-btn" data-filter="instituto"><i class="fas fa-book"></i> Instituto</button>
-                <button id="nuevoEventoBtn" class="btn-primary admin-only" style="margin-left:auto; display:none;"><i class="fas fa-plus"></i> Nuevo Evento</button>
-            </div>
+        <nav class="tab-nav">
+            <button class="tab-button active" data-tab="eventos">
+                <i class="fas fa-calendar-alt"></i> Eventos
+            </button>
+            <button class="tab-button" data-tab="anuncios">
+                <i class="fas fa-bullhorn"></i> Anuncios
+            </button>
+            <button class="tab-button" data-tab="ensenanzas">
+                <i class="fas fa-bible"></i> Enseñanzas
+            </button>
+            <button class="tab-button" data-tab="recursos">
+                <i class="fas fa-download"></i> Recursos
+            </button>
+        </nav>
 
-            <div id="calendar-grid" class="calendar-grid">
-                <!-- Los eventos se cargarán desde JavaScript -->
-            </div>
-        </section>
-
-        <!-- PESTAÑA ANUNCIOS -->
-        <section id="anuncios" class="tab-content">
+        <div id="eventos" class="tab-content active">
             <div class="admin-toolbar">
-                <button id="nuevoAnuncioBtn" class="btn-primary admin-only" style="display:none;"><i class="fas fa-plus"></i> Nuevo Anuncio</button>
+                <button class="btn-primary admin-only" id="nuevoEventoBtn">
+                    <i class="fas fa-plus"></i> Nuevo Evento
+                </button>
+                <div class="calendar-filters">
+                    <button class="filter-btn active" data-filter="todos">Todos</button>
+                    <button class="filter-btn" data-filter="iglesia"><i class="fas fa-church"></i> Iglesia</button>
+                    <button class="filter-btn" data-filter="damas"><i class="fas fa-female"></i> Damas</button>
+                    <button class="filter-btn" data-filter="jovenes"><i class="fas fa-user-friends"></i> Jóvenes</button>
+                </div>
             </div>
-            <div id="anuncios-list" class="anuncios-grid">
-                <!-- Los anuncios se cargarán desde JS/localStorage -->
+            <div class="calendar-grid" id="calendar-grid">
+                <p style="text-align: center;">Cargando eventos...</p>
             </div>
-        </section>
+        </div>
 
-        <!-- PESTAÑA ENSEÑANZAS -->
-        <section id="ensenanzas" class="tab-content">
+        <div id="anuncios" class="tab-content">
             <div class="admin-toolbar">
-                <button id="nuevaEnsenanzaBtn" class="btn-primary admin-only" style="display:none;"><i class="fas fa-plus"></i> Nueva Enseñanza</button>
-                <select id="filtroEnsenanza" class="filtro-select">
-                    <option value="todas">Todas</option>
-                    <option value="Pastor">Pastor</option>
-                    <option value="Pastora">Pastora</option>
-                    <option value="Jarley">Jarley</option>
-                    <option value="Marice">Marice</option>
-                    <option value="Jóvenes">Jóvenes</option>
-                    <option value="Damas">Damas</option>
+                <button class="btn-primary admin-only" id="nuevoAnuncioBtn">
+                    <i class="fas fa-plus"></i> Nuevo Anuncio
+                </button>
+            </div>
+            <div class="anuncios-grid" id="anuncios-list">
+                <p style="text-align: center;">Cargando anuncios...</p>
+            </div>
+        </div>
+
+        <div id="ensenanzas" class="tab-content">
+            <div class="admin-toolbar">
+                <button class="btn-primary admin-only" id="nuevaEnsenanzaBtn">
+                    <i class="fas fa-plus"></i> Nueva Enseñanza
+                </button>
+                <select class="filtro-select" id="filtroEnsenanza">
+                    <option value="todas">Todos los autores</option>
                 </select>
             </div>
-            <div id="ensenanzas-list" class="ensenanzas-grid">
-                <!-- Las enseñanzas se cargarán desde JS/localStorage -->
+            <div class="ensenanzas-grid" id="ensenanzas-list">
+                <p style="text-align: center;">Cargando enseñanzas...</p>
             </div>
-        </section>
+        </div>
 
-        <!-- PESTAÑA RECURSOS -->
-        <section id="recursos" class="tab-content">
+        <div id="recursos" class="tab-content">
             <div class="admin-toolbar">
-                <button id="nuevoRecursoBtn" class="btn-primary admin-only" style="display:none;"><i class="fas fa-plus"></i> Añadir Recurso</button>
+                <button class="btn-primary admin-only" id="nuevoRecursoBtn">
+                    <i class="fas fa-plus"></i> Nuevo Recurso
+                </button>
             </div>
-            <div id="recursos-list" class="recursos-grid">
-                <!-- Los recursos se cargarán desde JS/localStorage -->
+            <div class="recursos-grid" id="recursos-list">
+                <p style="text-align: center;">Cargando recursos...</p>
             </div>
-        </section>
+        </div>
     </main>
 
-    <!-- MODAL PARA AÑADIR/EDITAR (reutilizable) -->
-    <div id="modal" class="modal">
+    <div class="modal" id="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h2 id="modal-titulo">Título</h2>
+            <h2 id="modal-titulo">Nuevo Elemento</h2>
             <form id="modal-form">
                 <input type="hidden" id="item-id">
+                
                 <div class="form-group">
-                    <label for="item-titulo">Título</label>
+                    <label for="item-titulo">Título *</label>
                     <input type="text" id="item-titulo" required>
                 </div>
+                
                 <div class="form-group">
-                    <label for="item-descripcion">Descripción / Contenido</label>
-                    <textarea id="item-descripcion" rows="3" required></textarea>
+                    <label for="item-descripcion">Descripción</label>
+                    <textarea id="item-descripcion" rows="3"></textarea>
                 </div>
-                <div class="form-group" id="campo-departamento" style="display:none;">
+                
+                <div class="form-group" id="campo-departamento" style="display: none;">
                     <label for="item-departamento">Departamento</label>
-                    <select id="item-departamento">
-                        <option value="iglesia">Iglesia General</option>
-                        <option value="damas">Damas</option>
-                        <option value="jovenes">Jóvenes</option>
-                    </select>
+                    <select id="item-departamento"></select>
                 </div>
-                <div class="form-group" id="campo-fecha" style="display:none;">
+                
+                <div class="form-group" id="campo-fecha" style="display: none;">
                     <label for="item-fecha">Fecha</label>
                     <input type="date" id="item-fecha">
                 </div>
-                <div class="form-group" id="campo-hora" style="display:none;">
+                
+                <div class="form-group" id="campo-hora" style="display: none;">
                     <label for="item-hora">Hora</label>
                     <input type="time" id="item-hora">
                 </div>
-                <div class="form-group" id="campo-autor" style="display:none;">
-                    <label for="item-autor">Autor / Responsable</label>
+                
+                <div class="form-group" id="campo-autor" style="display: none;">
+                    <label for="item-autor">Responsable/Autor</label>
                     <input type="text" id="item-autor">
                 </div>
-                <div class="form-group" id="campo-url" style="display:none;">
-                    <label for="item-url">URL (enlace)</label>
+                
+                <div class="form-group" id="campo-url" style="display: none;">
+                    <label for="item-url">URL</label>
                     <input type="url" id="item-url" placeholder="https://...">
                 </div>
-                <div class="form-group" id="campo-tipo" style="display:none;">
-                    <label for="item-tipo">Tipo</label>
+                
+                <div class="form-group" id="campo-tipo" style="display: none;">
+                    <label for="item-tipo">Tipo de recurso</label>
                     <select id="item-tipo">
+                        <option value="documento">Documento</option>
                         <option value="audio">Audio</option>
                         <option value="video">Video</option>
-                        <option value="documento">Documento</option>
-                        <option value="otro">Otro</option>
                     </select>
                 </div>
+                
                 <button type="submit" class="btn-submit">Guardar</button>
             </form>
         </div>
     </div>
 
-    <!-- MODAL DE LOGIN -->
-    <div id="loginModal" class="modal" style="display:none;">
-        <div class="modal-content" style="max-width:350px;">
-            <h2><i class="fas fa-lock"></i> Acceso de Líderes</h2>
-            <p>Ingresa la contraseña para modificar contenido</p>
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <h2><i class="fas fa-lock"></i> Acceso Administrador</h2>
+            <p>Ingresa la contraseña para acceder al panel de administración.</p>
             <div class="form-group">
-                <input type="password" id="loginPassword" placeholder="Contraseña" style="width:100%; padding:12px;">
+                <label for="loginPassword">Contraseña</label>
+                <input type="password" id="loginPassword" placeholder="••••••••">
             </div>
-            <div style="display:flex; gap:10px;">
-                <button id="loginBtn" class="btn-primary" style="flex:2;"><i class="fas fa-sign-in-alt"></i> Entrar</button>
-                <button id="loginCancelBtn" class="btn-secondary" style="flex:1;">Cancelar</button>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-primary" id="loginBtn" style="flex: 1;">Ingresar</button>
+                <button class="btn-secondary" id="loginCancelBtn" style="flex: 1;">Cancelar</button>
             </div>
-            <p id="loginError" style="color:#dc3545; margin-top:10px; display:none;">Contraseña incorrecta</p>
+            <p id="loginError" style="color: #dc3545; display: none; margin-top: 10px;">
+                Contraseña incorrecta
+            </p>
         </div>
-    </div>
-
-    <!-- INDICADOR DE MODO LECTURA/ADMIN -->
-    <div id="modoIndicador" class="modo-lectura" style="display:none;">
-        <i class="fas fa-eye"></i> Modo Lectura
     </div>
 
     <footer class="footer">
         <div class="container">
-            <p>© 2026 Iglesia Bautista "Solo Cristo Salva" - 
-                <a href="#" id="adminLoginLink" style="color:white; text-decoration:underline;">Acceso líderes</a> | 
-                <a href="#" id="logoutLink" style="color:white; text-decoration:underline; display:none;">Cerrar sesión</a>
-            </p>
+            <p>© 2026 Iglesia Solo Cristo Salva - Sistema de Administración</p>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <!-- FIREBASE SDKS -->
+   <!-- FIREBASE SDK (VERSIÓN 8 - MÁS FÁCIL) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <script>
+        // ==================== CONFIGURACIÓN DE FIREBASE ====================
+        // REEMPLAZA ESTO CON TU CONFIGURACIÓN DE FIREBASE
+       // ==================== CONFIGURACIÓN DE FIREBASE ====================
+const firebaseConfig = {
+  apiKey: "AIzaSyD7vuff1k8wU8NZ5CHgVwmIkQK9mmBF-tY",
+  authDomain: "iglesia-solo-cristo-salva.firebaseapp.com",
+  projectId: "iglesia-solo-cristo-salva",
+  storageBucket: "iglesia-solo-cristo-salva.firebasestorage.app",
+  messagingSenderId: "949195395163",
+  appId: "1:949195395163:web:bdf73a4812ccd26e072f7e"
+};
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // ==================== VARIABLES GLOBALES ====================
+        let modalTipoActual = '';
+        let itemEditandoId = null;
+        let esAdmin = false;
+        let notificacionesLeidas = new Set();
+
+        // ==================== FUNCIONES DE BASE DE DATOS ====================
+
+        // Cargar todos los datos
+        async function cargarDatos() {
+            try {
+                console.log('Cargando datos desde Firebase...');
+                
+                // Cargar eventos
+                const eventosSnapshot = await db.collection('eventos').get();
+                const eventos = [];
+                eventosSnapshot.forEach(doc => eventos.push({ id: doc.id, ...doc.data() }));
+                
+                // Cargar anuncios
+                const anunciosSnapshot = await db.collection('anuncios').get();
+                const anuncios = [];
+                anunciosSnapshot.forEach(doc => anuncios.push({ id: doc.id, ...doc.data() }));
+                
+                // Cargar enseñanzas
+                const ensenanzasSnapshot = await db.collection('ensenanzas').get();
+                const ensenanzas = [];
+                ensenanzasSnapshot.forEach(doc => ensenanzas.push({ id: doc.id, ...doc.data() }));
+                
+                // Cargar recursos
+                const recursosSnapshot = await db.collection('recursos').get();
+                const recursos = [];
+                recursosSnapshot.forEach(doc => recursos.push({ id: doc.id, ...doc.data() }));
+                
+                // Cargar configuración
+                const configDoc = await db.collection('configuracion').doc('admin').get();
+                const config = configDoc.exists ? configDoc.data() : { password: 'SoloCristo2026' };
+                
+                const datos = { eventos, anuncios, ensenanzas, recursos, config };
+                
+                // Guardar en localStorage como backup
+                localStorage.setItem('iglesia_backup', JSON.stringify(datos));
+                
+                console.log('Datos cargados:', datos);
+                return datos;
+                
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                
+                // Intentar con backup
+                const backup = localStorage.getItem('iglesia_backup');
+                if (backup) {
+                    console.log('Usando backup local');
+                    return JSON.parse(backup);
+                }
+                
+                return { eventos: [], anuncios: [], ensenanzas: [], recursos: [], config: { password: 'SoloCristo2026' } };
+            }
+        }
+
+        // Guardar un item
+        async function guardarItem(tipo, item) {
+            try {
+                if (!esAdmin) throw new Error('No autorizado');
+                
+                console.log(`Guardando ${tipo}:`, item);
+                
+                const colecciones = {
+                    'evento': 'eventos',
+                    'anuncio': 'anuncios',
+                    'ensenanza': 'ensenanzas',
+                    'recurso': 'recursos'
+                };
+                
+                const coleccion = colecciones[tipo];
+                
+                if (item.id) {
+                    // Actualizar existente
+                    await db.collection(coleccion).doc(item.id).set(item);
+                } else {
+                    // Crear nuevo
+                    item.id = generarId(tipo);
+                    await db.collection(coleccion).doc(item.id).set(item);
+                }
+                
+                return { exito: true, id: item.id };
+                
+            } catch (error) {
+                console.error('Error guardando:', error);
+                return { exito: false, error: error.message };
+            }
+        }
+
+        // Eliminar un item
+        async function eliminarItem(tipo, id) {
+            try {
+                if (!esAdmin) throw new Error('No autorizado');
+                
+                const colecciones = {
+                    'evento': 'eventos',
+                    'anuncio': 'anuncios',
+                    'ensenanza': 'ensenanzas',
+                    'recurso': 'recursos'
+                };
+                
+                const coleccion = colecciones[tipo];
+                
+                await db.collection(coleccion).doc(id).delete();
+                return { exito: true, id };
+                
+            } catch (error) {
+                console.error('Error eliminando:', error);
+                return { exito: false, error: error.message };
+            }
+        }
+
+        // Verificar contraseña
+        async function verificarAdmin(password) {
+            try {
+                const configDoc = await db.collection('configuracion').doc('admin').get();
+                const config = configDoc.exists ? configDoc.data() : { password: 'SoloCristo2026' };
+                
+                return password === config.password;
+            } catch (error) {
+                console.error('Error verificando admin:', error);
+                return false;
+            }
+        }
+
+        // Generar ID
+        function generarId(tipo) {
+            const prefijos = { evento: 'e', anuncio: 'a', ensenanza: 'n', recurso: 'r' };
+            const prefijo = prefijos[tipo] || 'x';
+            return prefijo + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+        }
+
+        // ==================== FUNCIONES DE UI ====================
+
+        function mostrarCargando(mostrar) {
+            let loader = document.getElementById('loader');
+            if (!loader && mostrar) {
+                loader = document.createElement('div');
+                loader.id = 'loader';
+                loader.innerHTML = '<div class="spinner"></div><p>Cargando...</p>';
+                loader.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0,0,0,0.5); display: flex; align-items: center;
+                    justify-content: center; flex-direction: column; z-index: 10001; color: white;
+                `;
+                document.body.appendChild(loader);
+            }
+            if (loader) loader.style.display = mostrar ? 'flex' : 'none';
+        }
+
+        function mostrarNotificacion(mensaje, tipo = 'exito') {
+            const notificacion = document.createElement('div');
+            notificacion.style.cssText = `
+                position: fixed; top: 20px; right: 20px; padding: 15px 25px;
+                border-radius: 5px; color: white; z-index: 9999;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1); animation: slideIn 0.3s ease;
+                background: ${tipo === 'exito' ? '#28a745' : tipo === 'info' ? '#17a2b8' : '#dc3545'};
+            `;
+            notificacion.innerHTML = `<i class="fas ${tipo === 'exito' ? 'fa-check-circle' : tipo === 'info' ? 'fa-info-circle' : 'fa-exclamation-circle'}"></i> ${mensaje}`;
+            
+            document.body.appendChild(notificacion);
+            
+            setTimeout(() => {
+                notificacion.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notificacion.remove(), 300);
+            }, 3000);
+        }
+
+        // ==================== RENDERIZADO ====================
+
+        async function renderCalendario(filtro = 'todos') {
+            const datos = await cargarDatos();
+            const eventos = datos.eventos || [];
+            const grid = document.getElementById('calendar-grid');
+            
+            eventos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+            
+            let html = '';
+            eventos.forEach(event => {
+                if (filtro !== 'todos' && event.departamento !== filtro) return;
+                
+                const fecha = event.fecha ? new Date(event.fecha + 'T12:00:00') : new Date();
+                const fechaStr = event.fecha ? fecha.toLocaleDateString('es-ES', { 
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+                }) : 'Fecha no asignada';
+                
+                const nombreDepartamento = {
+                    'iglesia': 'Iglesia General', 'damas': 'Damas', 'jovenes': 'Jóvenes',
+                    'juveniles': 'Juveniles', 'infantil': 'Ministerio Infantil',
+                    'caballeros': 'Caballeros', 'instituto': 'Instituto Bíblico'
+                }[event.departamento] || event.departamento || 'Sin departamento';
+                
+                const colores = {
+                    'iglesia': '#2c3e50', 'damas': '#e83e8c', 'jovenes': '#17a2b8',
+                    'juveniles': '#fd7e14', 'infantil': '#28a745',
+                    'caballeros': '#007bff', 'instituto': '#6f42c1'
+                };
+                
+                const hoy = new Date(); 
+                hoy.setHours(0, 0, 0, 0);
+                let esHoy = false;
+                
+                if (event.fecha) {
+                    const fechaEvento = new Date(event.fecha + 'T12:00:00');
+                    fechaEvento.setHours(0, 0, 0, 0);
+                    esHoy = fechaEvento.getTime() === hoy.getTime();
+                }
+                
+                html += `
+                    <div class="event-card ${esHoy ? 'evento-hoy' : ''}" style="border-left-color: ${colores[event.departamento] || '#2c3e50'};" data-id="${event.id}">
+                        ${esHoy ? '<div class="hoy-badge"><i class="fas fa-bell"></i> HOY</div>' : ''}
+                        <div class="event-date"><i class="far fa-calendar-alt"></i> ${fechaStr}</div>
+                        <h3 class="event-title">${event.titulo || 'Sin título'}</h3>
+                        <span class="event-department" style="background: ${colores[event.departamento] || '#2c3e50'}; color: white;">
+                            ${nombreDepartamento}
+                        </span>
+                        <p class="event-description">${event.descripcion || ''}</p>
+                        <div class="event-meta">
+                            ${event.hora ? `<span><i class="far fa-clock"></i> ${event.hora}</span>` : ''}
+                            ${event.responsable ? `<span><i class="fas fa-user"></i> ${event.responsable}</span>` : ''}
+                        </div>
+                        ${esAdmin ? `
+                        <div class="card-actions">
+                            <button class="edit-evento" data-id="${event.id}"><i class="fas fa-edit"></i></button>
+                            <button class="delete-evento" data-id="${event.id}"><i class="fas fa-trash"></i></button>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            grid.innerHTML = html || '<p class="no-results">No hay eventos para este filtro.</p>';
+            
+            if (esAdmin) {
+                document.querySelectorAll('.delete-evento').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        await eliminarItem('evento', e.currentTarget.dataset.id);
+                        await renderCalendario(filtro);
+                    });
+                });
+                
+                document.querySelectorAll('.edit-evento').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        abrirModalEvento(e.currentTarget.dataset.id);
+                    });
+                });
+            }
+        }
+
+        async function renderAnuncios() {
+            const datos = await cargarDatos();
+            const anuncios = datos.anuncios || [];
+            const container = document.getElementById('anuncios-list');
+            
+            anuncios.sort((a, b) => new Date(b.fecha || '2000-01-01') - new Date(a.fecha || '2000-01-01'));
+            
+            const hace3Dias = new Date(); 
+            hace3Dias.setDate(hace3Dias.getDate() - 3); 
+            hace3Dias.setHours(0, 0, 0, 0);
+            
+            let html = '';
+            anuncios.forEach(anuncio => {
+                let esReciente = false;
+                if (anuncio.fecha) {
+                    const fechaAnuncio = new Date(anuncio.fecha + 'T12:00:00'); 
+                    fechaAnuncio.setHours(0, 0, 0, 0);
+                    esReciente = fechaAnuncio >= hace3Dias;
+                }
+                
+                html += `
+                    <div class="card ${esReciente ? 'anuncio-reciente' : ''}" data-id="${anuncio.id}">
+                        ${esReciente ? '<span class="nuevo-badge"><i class="fas fa-bell"></i> NUEVO</span>' : ''}
+                        <h3>${anuncio.titulo || 'Sin título'}</h3>
+                        <p>${anuncio.descripcion || ''}</p>
+                        <div class="card-meta">
+                            <span><i class="far fa-calendar"></i> ${anuncio.fecha || 'Sin fecha'}</span>
+                            ${esAdmin ? `
+                            <div class="card-actions">
+                                <button class="edit-anuncio" data-id="${anuncio.id}"><i class="fas fa-edit"></i></button>
+                                <button class="delete-anuncio" data-id="${anuncio.id}"><i class="fas fa-trash"></i></button>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            if (esAdmin) {
+                document.querySelectorAll('.delete-anuncio').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        await eliminarItem('anuncio', e.currentTarget.dataset.id);
+                        await renderAnuncios();
+                    });
+                });
+                
+                document.querySelectorAll('.edit-anuncio').forEach(btn => {
+                    btn.addEventListener('click', (e) => abrirModalAnuncio(e.currentTarget.dataset.id));
+                });
+            }
+        }
+
+        async function renderEnsenanzas(filtro = 'todas') {
+            const datos = await cargarDatos();
+            const ensenanzas = datos.ensenanzas || [];
+            const container = document.getElementById('ensenanzas-list');
+            
+            // Actualizar filtro de autores
+            const autores = [...new Set(ensenanzas.map(e => e.autor).filter(Boolean))];
+            const filtroSelect = document.getElementById('filtroEnsenanza');
+            let opciones = '<option value="todas">Todos los autores</option>';
+            autores.forEach(autor => {
+                opciones += `<option value="${autor}">${autor}</option>`;
+            });
+            filtroSelect.innerHTML = opciones;
+            
+            let filtradas = ensenanzas;
+            if (filtro !== 'todas') filtradas = ensenanzas.filter(e => e.autor === filtro);
+            filtradas.sort((a, b) => new Date(b.fecha || '2000-01-01') - new Date(a.fecha || '2000-01-01'));
+            
+            let html = '';
+            filtradas.forEach(ens => {
+                html += `
+                    <div class="card" data-id="${ens.id}">
+                        <h3>${ens.titulo || 'Sin título'}</h3>
+                        <p><strong>${ens.autor || 'Anónimo'}</strong> · ${ens.fecha || 'Sin fecha'}</p>
+                        <p>${ens.descripcion || ''}</p>
+                        <div class="card-meta">
+                            ${ens.url ? `<a href="${ens.url}" target="_blank"><i class="fas fa-external-link-alt"></i> Ver sermón</a>` : '<span>Sin enlace</span>'}
+                            ${esAdmin ? `
+                            <div class="card-actions">
+                                <button class="edit-ensenanza" data-id="${ens.id}"><i class="fas fa-edit"></i></button>
+                                <button class="delete-ensenanza" data-id="${ens.id}"><i class="fas fa-trash"></i></button>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            if (esAdmin) {
+                document.querySelectorAll('.delete-ensenanza').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        await eliminarItem('ensenanza', e.currentTarget.dataset.id);
+                        await renderEnsenanzas(document.getElementById('filtroEnsenanza').value);
+                    });
+                });
+                
+                document.querySelectorAll('.edit-ensenanza').forEach(btn => {
+                    btn.addEventListener('click', (e) => abrirModalEnsenanza(e.currentTarget.dataset.id));
+                });
+            }
+        }
+
+        async function renderRecursos() {
+            const datos = await cargarDatos();
+            const recursos = datos.recursos || [];
+            const container = document.getElementById('recursos-list');
+            
+            let html = '';
+            recursos.forEach(recurso => {
+                const icono = recurso.tipo === 'audio' ? 'fa-headphones' : 
+                             recurso.tipo === 'video' ? 'fa-video' : 'fa-file-alt';
+                html += `
+                    <div class="card" data-id="${recurso.id}">
+                        <h3><i class="fas ${icono}"></i> ${recurso.titulo || 'Sin título'}</h3>
+                        <p>${recurso.descripcion || ''}</p>
+                        <div class="card-meta">
+                            ${recurso.url ? `<a href="${recurso.url}" target="_blank"><i class="fas fa-download"></i> Descargar</a>` : '<span>Sin archivo</span>'}
+                            ${esAdmin ? `
+                            <div class="card-actions">
+                                <button class="edit-recurso" data-id="${recurso.id}"><i class="fas fa-edit"></i></button>
+                                <button class="delete-recurso" data-id="${recurso.id}"><i class="fas fa-trash"></i></button>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            if (esAdmin) {
+                document.querySelectorAll('.delete-recurso').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        await eliminarItem('recurso', e.currentTarget.dataset.id);
+                        await renderRecursos();
+                    });
+                });
+                
+                document.querySelectorAll('.edit-recurso').forEach(btn => {
+                    btn.addEventListener('click', (e) => abrirModalRecurso(e.currentTarget.dataset.id));
+                });
+            }
+        }
+
+        // ==================== NOTIFICACIONES ====================
+
+        async function obtenerNotificaciones() {
+            const datos = await cargarDatos();
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            
+            const notificaciones = [];
+            
+            // Eventos de hoy
+            (datos.eventos || []).forEach(event => {
+                if (event.fecha) {
+                    const fechaEvento = new Date(event.fecha + 'T12:00:00');
+                    fechaEvento.setHours(0, 0, 0, 0);
+                    
+                    if (fechaEvento.getTime() === hoy.getTime()) {
+                        notificaciones.push({
+                            id: `evento_${event.id}`,
+                            tipo: 'evento',
+                            titulo: event.titulo,
+                            descripcion: event.descripcion,
+                            fecha: event.fecha,
+                            hora: event.hora,
+                            leida: notificacionesLeidas.has(`evento_${event.id}`)
+                        });
+                    }
+                }
+            });
+            
+            // Anuncios recientes
+            const hace3Dias = new Date();
+            hace3Dias.setDate(hace3Dias.getDate() - 3);
+            hace3Dias.setHours(0, 0, 0, 0);
+            
+            (datos.anuncios || []).forEach(anuncio => {
+                if (anuncio.fecha) {
+                    const fechaAnuncio = new Date(anuncio.fecha + 'T12:00:00');
+                    fechaAnuncio.setHours(0, 0, 0, 0);
+                    
+                    if (fechaAnuncio >= hace3Dias) {
+                        notificaciones.push({
+                            id: `anuncio_${anuncio.id}`,
+                            tipo: 'anuncio',
+                            titulo: anuncio.titulo,
+                            descripcion: anuncio.descripcion,
+                            fecha: anuncio.fecha,
+                            leida: notificacionesLeidas.has(`anuncio_${anuncio.id}`)
+                        });
+                    }
+                }
+            });
+            
+            return notificaciones;
+        }
+
+        async function actualizarBadgeNotificaciones() {
+            const notificaciones = await obtenerNotificaciones();
+            const noLeidas = notificaciones.filter(n => !n.leida).length;
+            const badge = document.getElementById('notificationBadge');
+            
+            if (badge) {
+                if (noLeidas > 0) {
+                    badge.textContent = noLeidas > 9 ? '9+' : noLeidas;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+
+        async function renderizarPanelNotificaciones() {
+            const notificaciones = await obtenerNotificaciones();
+            const lista = document.getElementById('notificationsList');
+            
+            if (notificaciones.length === 0) {
+                lista.innerHTML = `
+                    <div class="notification-empty">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>No hay notificaciones</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            notificaciones.forEach(notif => {
+                const fecha = new Date(notif.fecha + 'T12:00:00');
+                const fechaStr = fecha.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+                const icono = notif.tipo === 'evento' ? 'fa-calendar-day' : 'fa-bullhorn';
+                const color = notif.tipo === 'evento' ? '#e67e22' : '#17a2b8';
+                
+                html += `
+                    <div class="notification-item ${notif.leida ? 'leida' : 'no-leida'}" data-id="${notif.id}">
+                        <div class="notification-icon" style="background: ${color}20; color: ${color};">
+                            <i class="fas ${icono}"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">${notif.titulo}</div>
+                            <div class="notification-desc">${(notif.descripcion || '').substring(0, 60)}${notif.descripcion && notif.descripcion.length > 60 ? '...' : ''}</div>
+                            <div class="notification-meta">
+                                <span><i class="far fa-calendar"></i> ${fechaStr}</span>
+                                ${notif.hora ? `<span><i class="far fa-clock"></i> ${notif.hora}</span>` : ''}
+                            </div>
+                        </div>
+                        ${!notif.leida ? '<span class="notification-dot"></span>' : ''}
+                    </div>
+                `;
+            });
+            
+            lista.innerHTML = html;
+            
+            document.querySelectorAll('.notification-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const id = item.dataset.id;
+                    notificacionesLeidas.add(id);
+                    localStorage.setItem('notificaciones_leidas', JSON.stringify([...notificacionesLeidas]));
+                    item.classList.remove('no-leida');
+                    item.classList.add('leida');
+                    const dot = item.querySelector('.notification-dot');
+                    if (dot) dot.remove();
+                    actualizarBadgeNotificaciones();
+                });
+            });
+        }
+
+        // ==================== MODALES ====================
+
+        function abrirModal(titulo, tipo, item = null) {
+            if (!esAdmin) {
+                mostrarNotificacion('Debes iniciar sesión como administrador', 'error');
+                mostrarLoginModal();
+                return;
+            }
+            
+            modalTipoActual = tipo;
+            itemEditandoId = item?.id || null;
+            
+            document.getElementById('modal-titulo').textContent = titulo;
+            
+            ['departamento', 'fecha', 'hora', 'autor', 'url', 'tipo'].forEach(campo => {
+                const elemento = document.getElementById(`campo-${campo}`);
+                if (elemento) elemento.style.display = 'none';
+            });
+            
+            document.getElementById('modal-form').reset();
+            document.getElementById('item-id').value = item?.id || '';
+            
+            if (tipo === 'evento') {
+                ['departamento', 'fecha', 'hora', 'autor'].forEach(c => {
+                    const elemento = document.getElementById(`campo-${c}`);
+                    if (elemento) elemento.style.display = 'block';
+                });
+                
+                const deptoSelect = document.getElementById('item-departamento');
+                if (deptoSelect) {
+                    deptoSelect.innerHTML = `
+                        <option value="iglesia">Iglesia General</option>
+                        <option value="damas">Damas</option>
+                        <option value="jovenes">Jóvenes</option>
+                        <option value="juveniles">Juveniles</option>
+                        <option value="infantil">Ministerio Infantil</option>
+                        <option value="caballeros">Caballeros</option>
+                        <option value="instituto">Instituto Bíblico</option>
+                    `;
+                }
+                
+                if (item) {
+                    document.getElementById('item-titulo').value = item.titulo || '';
+                    document.getElementById('item-descripcion').value = item.descripcion || '';
+                    if (document.getElementById('item-departamento')) 
+                        document.getElementById('item-departamento').value = item.departamento || 'iglesia';
+                    if (document.getElementById('item-fecha')) 
+                        document.getElementById('item-fecha').value = item.fecha || '';
+                    if (document.getElementById('item-hora')) 
+                        document.getElementById('item-hora').value = item.hora || '';
+                    if (document.getElementById('item-autor')) 
+                        document.getElementById('item-autor').value = item.responsable || '';
+                }
+            } else if (tipo === 'anuncio') {
+                const campoFecha = document.getElementById('campo-fecha');
+                if (campoFecha) campoFecha.style.display = 'block';
+                
+                if (item) {
+                    document.getElementById('item-titulo').value = item.titulo || '';
+                    document.getElementById('item-descripcion').value = item.descripcion || '';
+                    if (document.getElementById('item-fecha')) 
+                        document.getElementById('item-fecha').value = item.fecha || '';
+                }
+            } else if (tipo === 'ensenanza') {
+                ['autor', 'fecha', 'url'].forEach(c => {
+                    const elemento = document.getElementById(`campo-${c}`);
+                    if (elemento) elemento.style.display = 'block';
+                });
+                
+                if (item) {
+                    document.getElementById('item-titulo').value = item.titulo || '';
+                    document.getElementById('item-descripcion').value = item.descripcion || '';
+                    if (document.getElementById('item-autor')) 
+                        document.getElementById('item-autor').value = item.autor || '';
+                    if (document.getElementById('item-fecha')) 
+                        document.getElementById('item-fecha').value = item.fecha || '';
+                    if (document.getElementById('item-url')) 
+                        document.getElementById('item-url').value = item.url || '';
+                }
+            } else if (tipo === 'recurso') {
+                ['tipo', 'url'].forEach(c => {
+                    const elemento = document.getElementById(`campo-${c}`);
+                    if (elemento) elemento.style.display = 'block';
+                });
+                
+                if (item) {
+                    document.getElementById('item-titulo').value = item.titulo || '';
+                    document.getElementById('item-descripcion').value = item.descripcion || '';
+                    if (document.getElementById('item-tipo')) 
+                        document.getElementById('item-tipo').value = item.tipo || 'documento';
+                    if (document.getElementById('item-url')) 
+                        document.getElementById('item-url').value = item.url || '';
+                }
+            }
+            
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        async function abrirModalEvento(id = null) {
+            if (id) {
+                const datos = await cargarDatos();
+                const evento = datos.eventos.find(e => e.id === id);
+                if (evento) abrirModal('Editar Evento', 'evento', evento);
+            } else {
+                abrirModal('Nuevo Evento', 'evento');
+            }
+        }
+
+        async function abrirModalAnuncio(id = null) {
+            if (id) {
+                const datos = await cargarDatos();
+                const anuncio = datos.anuncios.find(a => a.id === id);
+                if (anuncio) abrirModal('Editar Anuncio', 'anuncio', anuncio);
+            } else {
+                abrirModal('Nuevo Anuncio', 'anuncio');
+            }
+        }
+
+        async function abrirModalEnsenanza(id = null) {
+            if (id) {
+                const datos = await cargarDatos();
+                const ens = datos.ensenanzas.find(e => e.id === id);
+                if (ens) abrirModal('Editar Enseñanza', 'ensenanza', ens);
+            } else {
+                abrirModal('Nueva Enseñanza', 'ensenanza');
+            }
+        }
+
+        async function abrirModalRecurso(id = null) {
+            if (id) {
+                const datos = await cargarDatos();
+                const recurso = datos.recursos.find(r => r.id === id);
+                if (recurso) abrirModal('Editar Recurso', 'recurso', recurso);
+            } else {
+                abrirModal('Nuevo Recurso', 'recurso');
+            }
+        }
+
+        // ==================== LOGIN ====================
+
+        function mostrarLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('loginPassword').focus();
+        }
+
+        function cerrarLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
+
+        function actualizarUIporPermisos() {
+            const adminElements = document.querySelectorAll('.admin-only');
+            adminElements.forEach(el => {
+                el.style.display = esAdmin ? 'inline-flex' : 'none';
+            });
+            
+            const logoutLink = document.getElementById('logoutLink');
+            const adminLoginLink = document.getElementById('adminLoginLink');
+            const indicador = document.getElementById('modoIndicador');
+            
+            if (esAdmin) {
+                if (logoutLink) logoutLink.style.display = 'inline';
+                if (adminLoginLink) adminLoginLink.style.display = 'none';
+                if (indicador) indicador.style.display = 'none';
+            } else {
+                if (logoutLink) logoutLink.style.display = 'none';
+                if (adminLoginLink) adminLoginLink.style.display = 'inline';
+                if (indicador) indicador.style.display = 'block';
+            }
+        }
+
+        // ==================== GUARDAR FORMULARIO ====================
+
+        document.getElementById('modal-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!esAdmin) {
+                cerrarModal();
+                mostrarNotificacion('Debes iniciar sesión como administrador', 'error');
+                mostrarLoginModal();
+                return;
+            }
+            
+            const tipo = modalTipoActual;
+            const id = document.getElementById('item-id').value || null;
+            const titulo = document.getElementById('item-titulo').value;
+            const descripcion = document.getElementById('item-descripcion').value;
+            
+            let nuevoItem = { id, titulo, descripcion };
+            
+            if (tipo === 'evento') {
+                nuevoItem.departamento = document.getElementById('item-departamento')?.value || 'iglesia';
+                nuevoItem.fecha = document.getElementById('item-fecha')?.value || '';
+                nuevoItem.hora = document.getElementById('item-hora')?.value || '';
+                nuevoItem.responsable = document.getElementById('item-autor')?.value || '';
+                
+                const resultado = await guardarItem('evento', nuevoItem);
+                if (resultado.exito) {
+                    cerrarModal();
+                    const filtroActivo = document.querySelector('.filter-btn.active')?.dataset.filter || 'todos';
+                    await renderCalendario(filtroActivo);
+                }
+                
+            } else if (tipo === 'anuncio') {
+                nuevoItem.fecha = document.getElementById('item-fecha')?.value || '';
+                const resultado = await guardarItem('anuncio', nuevoItem);
+                if (resultado.exito) {
+                    cerrarModal();
+                    await renderAnuncios();
+                }
+                
+            } else if (tipo === 'ensenanza') {
+                nuevoItem.autor = document.getElementById('item-autor')?.value || '';
+                nuevoItem.fecha = document.getElementById('item-fecha')?.value || '';
+                nuevoItem.url = document.getElementById('item-url')?.value || '';
+                const resultado = await guardarItem('ensenanza', nuevoItem);
+                if (resultado.exito) {
+                    cerrarModal();
+                    await renderEnsenanzas(document.getElementById('filtroEnsenanza')?.value || 'todas');
+                }
+                
+            } else if (tipo === 'recurso') {
+                nuevoItem.tipo = document.getElementById('item-tipo')?.value || 'documento';
+                nuevoItem.url = document.getElementById('item-url')?.value || '';
+                const resultado = await guardarItem('recurso', nuevoItem);
+                if (resultado.exito) {
+                    cerrarModal();
+                    await renderRecursos();
+                }
+            }
+        });
+
+        // ==================== INICIALIZACIÓN ====================
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Inicializando aplicación con Firebase...');
+            
+            // Cargar notificaciones leídas
+            const leidas = localStorage.getItem('notificaciones_leidas');
+            if (leidas) {
+                notificacionesLeidas = new Set(JSON.parse(leidas));
+            }
+            
+            // Verificar sesión
+            esAdmin = sessionStorage.getItem('iglesia_admin') === 'true';
+            actualizarUIporPermisos();
+            
+            // Configurar event listeners
+            document.getElementById('adminLoginLink')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                mostrarLoginModal();
+            });
+            
+            document.getElementById('logoutLink')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                esAdmin = false;
+                sessionStorage.removeItem('iglesia_admin');
+                actualizarUIporPermisos();
+                mostrarNotificacion('Sesión cerrada', 'exito');
+                
+                // Recargar vistas
+                renderCalendario('todos');
+                renderAnuncios();
+                renderEnsenanzas(document.getElementById('filtroEnsenanza')?.value || 'todas');
+                renderRecursos();
+            });
+            
+            document.getElementById('loginBtn')?.addEventListener('click', async () => {
+                const password = document.getElementById('loginPassword')?.value || '';
+                const valido = await verificarAdmin(password);
+                
+                if (valido) {
+                    esAdmin = true;
+                    sessionStorage.setItem('iglesia_admin', 'true');
+                    actualizarUIporPermisos();
+                    cerrarLoginModal();
+                    mostrarNotificacion('Sesión iniciada', 'exito');
+                    
+                    // Recargar vistas con permisos de admin
+                    renderCalendario('todos');
+                    renderAnuncios();
+                    renderEnsenanzas(document.getElementById('filtroEnsenanza')?.value || 'todas');
+                    renderRecursos();
+                } else {
+                    document.getElementById('loginError').style.display = 'block';
+                }
+            });
+            
+            document.getElementById('loginCancelBtn')?.addEventListener('click', cerrarLoginModal);
+            
+            document.getElementById('loginPassword')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('loginBtn')?.click();
+            });
+            
+            window.addEventListener('click', (e) => {
+                if (e.target === document.getElementById('loginModal')) cerrarLoginModal();
+            });
+            
+            // Notificaciones
+            const bell = document.getElementById('notificationBell');
+            const panel = document.getElementById('notificationPanel');
+            
+            if (bell && panel) {
+                bell.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (panel.style.display === 'block') {
+                        panel.style.display = 'none';
+                    } else {
+                        renderizarPanelNotificaciones();
+                        panel.style.display = 'block';
+                    }
+                });
+            }
+            
+            document.getElementById('markAllRead')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                obtenerNotificaciones().then(notificaciones => {
+                    notificaciones.forEach(notif => notificacionesLeidas.add(notif.id));
+                    localStorage.setItem('notificaciones_leidas', JSON.stringify([...notificacionesLeidas]));
+                    renderizarPanelNotificaciones();
+                    actualizarBadgeNotificaciones();
+                    mostrarNotificacion('Todas las notificaciones marcadas como leídas', 'exito');
+                });
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (bell && panel && !bell.contains(e.target) && !panel.contains(e.target)) {
+                    panel.style.display = 'none';
+                }
+            });
+            
+            // Pestañas
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    btn.classList.add('active');
+                    const tabId = btn.dataset.tab;
+                    const tabContent = document.getElementById(tabId);
+                    if (tabContent) tabContent.classList.add('active');
+                });
+            });
+            
+            // Filtros calendario
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if (e.target.id === 'nuevoEventoBtn') return;
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderCalendario(btn.dataset.filter);
+                });
+            });
+            
+            document.getElementById('nuevoEventoBtn')?.addEventListener('click', () => abrirModalEvento());
+            document.getElementById('nuevoAnuncioBtn')?.addEventListener('click', () => abrirModalAnuncio());
+            document.getElementById('nuevaEnsenanzaBtn')?.addEventListener('click', () => abrirModalEnsenanza());
+            document.getElementById('nuevoRecursoBtn')?.addEventListener('click', () => abrirModalRecurso());
+            
+            document.getElementById('filtroEnsenanza')?.addEventListener('change', (e) => {
+                renderEnsenanzas(e.target.value);
+            });
+            
+            document.querySelector('.close-modal')?.addEventListener('click', cerrarModal);
+            window.addEventListener('click', (e) => {
+                if (e.target === document.getElementById('modal')) cerrarModal();
+            });
+            
+            // Render inicial
+            await renderCalendario('todos');
+            await renderAnuncios();
+            await renderEnsenanzas('todas');
+            await renderRecursos();
+            
+            await actualizarBadgeNotificaciones();
+            
+            // Actualizar cada 5 minutos
+            setInterval(async () => {
+                await actualizarBadgeNotificaciones();
+            }, 300000);
+            
+            console.log('Aplicación inicializada correctamente');
+        });
+
+        // Estilos de animación
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>

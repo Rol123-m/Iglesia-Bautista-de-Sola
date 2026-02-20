@@ -1,6 +1,6 @@
 // ==================== CONFIGURACIÓN ====================
 const SHEETS_CONFIG = {
-    URL: 'https://script.google.com/macros/s/AKfycbyWjscPxfMmUNUC1rH3wXLPdedKR2reFEB3gmuJeQyFyqxCDjUwWUPICPibKVG_QhYo/exec',
+    URL: 'https://script.google.com/macros/s/AKfycbzPc4m0dhHbh-xkaZGr2Okc1TFtrsBNyUiN28AQ2AYzXZGZdfNmsPfywTYAx2t3TiKg/exec',
     ADMIN_PASSWORD: 'SoloCristo2026'
 };
 
