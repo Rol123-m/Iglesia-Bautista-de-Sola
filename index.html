@@ -27,27 +27,44 @@
     <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-72x72.png">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Resto de tu CSS... -->
-
+    
+    <!-- ONE SIGNAL - Configuración MÍNIMA -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "7b3842d9-7f27-49c3-a621-37432b9cdc2e",
-    });
-  });
-</script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(function(OneSignal) {
+        OneSignal.init({
+          appId: "7b3842d9-7f27-49c3-a621-37432b9cdc2e",
+          autoRegister: true,
+        });
+      });
+    </script>
 </head>
 <body>
     <header class="header">
         <div class="container">
-            <button class="config-btn" id="adminLoginLink">
-                <i class="fas fa-cog"></i> Admin
-            </button>
-            <button class="config-btn" id="logoutLink" style="display: none;">
-                <i class="fas fa-sign-out-alt"></i> Salir
-            </button>
+            <div class="header-top">
+                <button class="config-btn" id="adminLoginLink">
+                    <i class="fas fa-cog"></i> Admin
+                </button>
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <button class="user-btn" id="userBtn">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="userEmail"></span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="user-info">
+                            <i class="fas fa-user-shield"></i>
+                            <span id="userDisplayName"></span>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" id="logoutLink">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </button>
+                    </div>
+                </div>
+            </div>
             
             <h1>
                 <i class="fas fa-church"></i> 
@@ -159,6 +176,93 @@
         </div>
     </main>
 
+    <!-- MODAL DE LOGIN (NUEVO) -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content login-modal">
+            <span class="close-modal" id="closeLoginModal">&times;</span>
+            <h2><i class="fas fa-lock"></i> Acceso Administradores</h2>
+            
+            <div class="login-tabs">
+                <button class="login-tab active" id="loginEmailTab">
+                    <i class="fas fa-envelope"></i> Email
+                </button>
+                <button class="login-tab" id="loginGoogleTab">
+                    <i class="fab fa-google"></i> Google
+                </button>
+            </div>
+            
+            <!-- Formulario Email/Password -->
+            <form id="emailLoginForm" class="login-form active">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="admin@iglesia.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary btn-block" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+            </form>
+            
+            <!-- Botón Google -->
+            <div id="googleLoginForm" class="login-form">
+                <button class="btn-google btn-block" id="googleLoginBtn">
+                    <i class="fab fa-google"></i> Continuar con Google
+                </button>
+            </div>
+            
+            <div class="login-footer">
+                <p>¿Primer acceso? <a href="#" id="showRegisterLink">Regístrate</a></p>
+            </div>
+            
+            <p id="loginError" class="error-message" style="display: none;"></p>
+        </div>
+    </div>
+
+    <!-- MODAL DE REGISTRO (NUEVO) -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content login-modal">
+            <span class="close-modal" id="closeRegisterModal">&times;</span>
+            <h2><i class="fas fa-user-plus"></i> Registrar Administrador</h2>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerName">Nombre completo</label>
+                    <input type="text" id="registerName" placeholder="Tu nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" placeholder="tu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Contraseña (mínimo 6 caracteres)</label>
+                    <input type="password" id="registerPassword" placeholder="••••••••" minlength="6" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirmPassword">Confirmar contraseña</label>
+                    <input type="password" id="registerConfirmPassword" placeholder="••••••••" minlength="6" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerAdminCode">Código de administrador</label>
+                    <input type="password" id="registerAdminCode" placeholder="Código secreto" required>
+                    <small class="form-text">Este código verifica que eres administrador</small>
+                </div>
+                <button type="submit" class="btn-primary btn-block" id="registerBtn">
+                    <i class="fas fa-user-check"></i> Registrar
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <p>¿Ya tienes cuenta? <a href="#" id="showLoginLink">Inicia sesión</a></p>
+            </div>
+            
+            <p id="registerError" class="error-message" style="display: none;"></p>
+        </div>
+    </div>
+
+    <!-- MODAL PARA EDITAR/CREAR (EXISTENTE) -->
     <div class="modal" id="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -215,56 +319,40 @@
         </div>
     </div>
 
-    <div class="modal" id="loginModal">
-        <div class="modal-content">
-            <h2><i class="fas fa-lock"></i> Acceso Administrador</h2>
-            <p>Ingresa la contraseña para acceder al panel de administración.</p>
-            <div class="form-group">
-                <label for="loginPassword">Contraseña</label>
-                <input type="password" id="loginPassword" placeholder="••••••••">
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-primary" id="loginBtn" style="flex: 1;">Ingresar</button>
-                <button class="btn-secondary" id="loginCancelBtn" style="flex: 1;">Cancelar</button>
-            </div>
-            <p id="loginError" style="color: #dc3545; display: none; margin-top: 10px;">
-                Contraseña incorrecta
-            </p>
-        </div>
-    </div>
-
     <footer class="footer">
         <div class="container">
             <p>© 2026 Iglesia Solo Cristo Salva - Sistema de Administración</p>
         </div>
     </footer>
 
-    <!-- FIREBASE SDKS -->
-   <!-- FIREBASE SDK (VERSIÓN 8 - MÁS FÁCIL) -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-<script src="script.js"></script>
-<!-- Registrar Service Worker -->
-<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
-                .then(registration => {
-                    console.log('ServiceWorker registrado con éxito:', registration.scope);
-                })
-                .catch(error => {
-                    console.log('Error al registrar ServiceWorker:', error);
-                });
-        });
-    }
+    <!-- FIREBASE SDK (VERSIÓN 8) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     
-    // Detectar si se abre como app instalada
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-        document.body.classList.add('pwa-mode');
-        console.log('Ejecutándose como PWA instalada');
-    }
-</script>
+    <!-- Nuestro script principal -->
+    <script src="script.js"></script>
     
- 
+    <!-- Registrar Service Workers -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    await navigator.serviceWorker.register('OneSignalSDKWorker.js');
+                    console.log('OneSignal Worker registrado');
+                    
+                    await navigator.serviceWorker.register('sw.js');
+                    console.log('Service Worker registrado');
+                } catch (error) {
+                    console.log('Error registrando Service Worker:', error);
+                }
+            });
+        }
+        
+        if (window.matchMedia('(display-mode: standalone)').matches || 
+            window.navigator.standalone === true) {
+            document.body.classList.add('pwa-mode');
+        }
+    </script>
 </body>
 </html>
