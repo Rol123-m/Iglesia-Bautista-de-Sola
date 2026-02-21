@@ -42,33 +42,39 @@
 </head>
 <body>
     <header class="header">
-      <div class="header-top">
-    <button class="config-btn" id="adminLoginLink">
-        <i class="fas fa-cog"></i> Admin
-    </button>
-    <div class="user-menu" id="userMenu" style="display: none;">
-        <button class="user-btn" id="userBtn">
-            <div class="avatar" id="userAvatar">
-                <span class="avatar-iniciales">?</span>
+        <div class="header-top">
+            <div class="logo-area">
+                <span class="iglesia-nombre">Iglesia Bautista Sola</span>
+                <span class="sitio-admin">Sitio de Administración</span>
             </div>
-            <span id="userEmail" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis;"></span>
-            <i class="fas fa-chevron-down"></i>
-        </button>
-        <div class="user-dropdown" id="userDropdown">
-            <div class="user-info">
-                <i class="fas fa-user-circle"></i>
-                <div>
-                    <div id="userDisplayName"></div>
-                    <div class="user-email" id="userEmailDropdown"></div>
+            <div class="header-actions">
+                <button class="config-btn" id="adminLoginLink">
+                    <i class="fas fa-cog"></i> Admin
+                </button>
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <button class="user-btn" id="userBtn">
+                        <div class="avatar" id="userAvatar">
+                            <span class="avatar-iniciales">?</span>
+                        </div>
+                        <span id="userEmail" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis;"></span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="user-info">
+                            <i class="fas fa-user-circle"></i>
+                            <div>
+                                <div id="userDisplayName"></div>
+                                <div class="user-email" id="userEmailDropdown"></div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" id="logoutLink">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="dropdown-divider"></div>
-            <button class="dropdown-item" id="logoutLink">
-                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-            </button>
         </div>
-    </div>
-</div>
     </header>
 
     <div class="modo-lectura" id="modoIndicador">
