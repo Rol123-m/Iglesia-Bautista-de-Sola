@@ -19,55 +19,35 @@ let esAdmin = false;
 let usuarioActual = null;
 let notificacionesLeidas = new Set();
 
-// Código secreto para registrar nuevos administradores (cámbialo)
-const ADMIN_SECRET_CODE = "SoloCristo2026";
-
-// ==================== FUNCIÓN SIMPLE DE NOTIFICACIONES ====================
-function mostrarNotificacionSimple() {
-    if (!esAdmin) {
-        mostrarNotificacion('Debes ser administrador', 'error');
-        return;
-    }
-    
-    if (window.OneSignal) {
-        window.OneSignal.showSlidedownPrompt();
-        mostrarNotificacion('✅ Ve al botón rojo de OneSignal en la esquina inferior derecha', 'exito');
-    } else {
-        mostrarNotificacion('❌ OneSignal no está cargado', 'error');
-    }
-}
-
 // ==================== FUNCIONES DE AUTENTICACIÓN ====================
 
-// Verificar si un email es administrador (puedes personalizar esto)
-async function esEmailAdministrador(email) {
+// Obtener iniciales del nombre
+function obtenerIniciales(nombre) {
+    if (!nombre) return '?';
+    return nombre
+        .split(' ')
+        .map(p => p[0])
+        .join('')
+        .toUpperCase()
+        .substring(0, 2);
+}
+
+// Verificar si un usuario es administrador
+async function esUsuarioAdmin(uid) {
     try {
-        // Opción 1: Lista de emails autorizados en Firestore
-        const adminsDoc = await db.collection('configuracion').doc('admins').get();
-        if (adminsDoc.exists) {
-            const admins = adminsDoc.data().emails || [];
-            return admins.includes(email);
-        }
-        
-        // Opción 2: Por defecto, el primer usuario registrado es admin
-        // o puedes tener un email específico
-        const adminConfig = await db.collection('configuracion').doc('admin').get();
-        const config = adminConfig.exists ? adminConfig.data() : {};
-        return config.adminEmails ? config.adminEmails.includes(email) : false;
-        
+        if (!uid) return false;
+        const userDoc = await db.collection('usuarios').doc(uid).get();
+        return userDoc.exists && userDoc.data().rol === 'admin';
     } catch (error) {
-        console.error('Error verificando email admin:', error);
+        console.error('Error verificando admin:', error);
         return false;
     }
 }
 
-// Registrar nuevo administrador
-async function registrarAdministrador(email, password, nombre, codigo) {
+// Registrar nuevo usuario (cualquier persona)
+async function registrarUsuario(email, password, nombre) {
     try {
-        // Verificar código secreto
-        if (codigo !== ADMIN_SECRET_CODE) {
-            return { exito: false, error: 'Código de administrador incorrecto' };
-        }
+        email = email.trim().toLowerCase();
         
         // Crear usuario en Firebase Auth
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
@@ -78,20 +58,15 @@ async function registrarAdministrador(email, password, nombre, codigo) {
             displayName: nombre
         });
         
-        // Guardar información adicional en Firestore
+        // Guardar información en Firestore (rol por defecto: 'usuario')
         await db.collection('usuarios').doc(user.uid).set({
             nombre: nombre,
             email: email,
             fechaRegistro: new Date().toISOString(),
-            esAdmin: true,
-            uid: user.uid
+            uid: user.uid,
+            rol: 'usuario', // Por defecto son usuarios normales
+            fotoURL: user.photoURL || null
         });
-        
-        // Agregar a la lista de administradores
-        const adminsRef = db.collection('configuracion').doc('admins');
-        await adminsRef.set({
-            emails: firebase.firestore.FieldValue.arrayUnion(email)
-        }, { merge: true });
         
         return { exito: true, user };
         
@@ -110,28 +85,37 @@ async function registrarAdministrador(email, password, nombre, codigo) {
 // Iniciar sesión con Email/Password
 async function loginConEmail(email, password) {
     try {
+        email = email.trim().toLowerCase();
+        
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
         
-        // Verificar si es administrador
-        const esAdmin = await esEmailAdministrador(user.email);
+        // Verificar rol en Firestore
+        const esAdmin = await esUsuarioAdmin(user.uid);
         
-        if (!esAdmin) {
-            // Si no es admin, cerramos sesión
-            await auth.signOut();
-            return { exito: false, error: 'No tienes permisos de administrador' };
-        }
-        
-        return { exito: true, user };
+        return { 
+            exito: true, 
+            user,
+            esAdmin 
+        };
         
     } catch (error) {
         console.error('Error login:', error);
         let mensaje = 'Error al iniciar sesión';
-        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-            mensaje = 'Email o contraseña incorrectos';
-        } else if (error.code === 'auth/invalid-email') {
-            mensaje = 'Email inválido';
+        
+        switch (error.code) {
+            case 'auth/user-not-found':
+            case 'auth/wrong-password':
+                mensaje = 'Email o contraseña incorrectos';
+                break;
+            case 'auth/invalid-email':
+                mensaje = 'Email inválido';
+                break;
+            case 'auth/too-many-requests':
+                mensaje = 'Demasiados intentos. Intenta más tarde';
+                break;
         }
+        
         return { exito: false, error: mensaje };
     }
 }
@@ -143,15 +127,29 @@ async function loginConGoogle() {
         const result = await auth.signInWithPopup(provider);
         const user = result.user;
         
-        // Verificar si es administrador
-        const esAdmin = await esEmailAdministrador(user.email);
+        // Verificar si el usuario ya existe en Firestore
+        const userDoc = await db.collection('usuarios').doc(user.uid).get();
         
-        if (!esAdmin) {
-            await auth.signOut();
-            return { exito: false, error: 'No tienes permisos de administrador' };
+        if (!userDoc.exists) {
+            // Primer inicio con Google - crear registro
+            await db.collection('usuarios').doc(user.uid).set({
+                nombre: user.displayName,
+                email: user.email,
+                fechaRegistro: new Date().toISOString(),
+                uid: user.uid,
+                rol: 'usuario', // Por defecto usuario normal
+                fotoURL: user.photoURL || null
+            });
         }
         
-        return { exito: true, user };
+        // Verificar si es admin
+        const esAdmin = userDoc.exists ? userDoc.data().rol === 'admin' : false;
+        
+        return { 
+            exito: true, 
+            user,
+            esAdmin 
+        };
         
     } catch (error) {
         console.error('Error Google login:', error);
@@ -179,6 +177,74 @@ async function cerrarSesion() {
     } catch (error) {
         console.error('Error cerrando sesión:', error);
         mostrarNotificacion('Error al cerrar sesión', 'error');
+    }
+}
+
+// ==================== FUNCIONES DE ADMINISTRACIÓN ====================
+
+// Obtener todos los usuarios (solo admin)
+async function obtenerTodosLosUsuarios() {
+    try {
+        if (!esAdmin) throw new Error('No autorizado');
+        
+        const snapshot = await db.collection('usuarios').get();
+        const usuarios = [];
+        snapshot.forEach(doc => {
+            usuarios.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        return usuarios;
+    } catch (error) {
+        console.error('Error obteniendo usuarios:', error);
+        return [];
+    }
+}
+
+// Cambiar rol de usuario (solo admin)
+async function cambiarRolUsuario(uid, nuevoRol) {
+    try {
+        if (!esAdmin) throw new Error('No autorizado');
+        
+        await db.collection('usuarios').doc(uid).update({
+            rol: nuevoRol
+        });
+        
+        return { exito: true };
+    } catch (error) {
+        console.error('Error cambiando rol:', error);
+        return { exito: false, error: error.message };
+    }
+}
+
+// Enviar mensaje a usuarios (solo admin)
+async function enviarMensajeAUsuarios(asunto, mensaje, usuarios = []) {
+    try {
+        if (!esAdmin) throw new Error('No autorizado');
+        
+        // Guardar mensaje en Firestore
+        const mensajeData = {
+            asunto,
+            mensaje,
+            fecha: new Date().toISOString(),
+            remitente: usuarioActual.uid,
+            remitenteNombre: usuarioActual.displayName || usuarioActual.email,
+            destinatarios: usuarios.length ? usuarios : 'todos' // Vacío = todos
+        };
+        
+        await db.collection('mensajes').add(mensajeData);
+        
+        // Aquí podrías integrar con OneSignal o email
+        if (window.OneSignal) {
+            // Enviar notificación push
+            window.OneSignal.sendSelf(message);
+        }
+        
+        return { exito: true };
+    } catch (error) {
+        console.error('Error enviando mensaje:', error);
+        return { exito: false, error: error.message };
     }
 }
 
@@ -333,19 +399,35 @@ function actualizarUIporPermisos() {
     const adminLoginLink = document.getElementById('adminLoginLink');
     const userMenu = document.getElementById('userMenu');
     const indicador = document.getElementById('modoIndicador');
-    const userEmailSpan = document.getElementById('userEmail');
-    const userDisplayName = document.getElementById('userDisplayName');
+    const userAvatar = document.getElementById('userAvatar');
+    const userEmail = document.getElementById('userEmail');
     
-    if (esAdmin && usuarioActual) {
+    if (usuarioActual) {
+        // Hay usuario logueado (admin o normal)
         if (adminLoginLink) adminLoginLink.style.display = 'none';
         if (userMenu) {
             userMenu.style.display = 'block';
-            if (userEmailSpan) userEmailSpan.textContent = usuarioActual.email;
-            if (userDisplayName) userDisplayName.textContent = usuarioActual.displayName || usuarioActual.email;
+            
+            // Actualizar avatar con iniciales o foto
+            if (userAvatar) {
+                if (usuarioActual.photoURL) {
+                    // Tiene foto de Google
+                    userAvatar.innerHTML = `<img src="${usuarioActual.photoURL}" alt="avatar">`;
+                } else {
+                    // Mostrar iniciales
+                    const iniciales = obtenerIniciales(usuarioActual.displayName || usuarioActual.email);
+                    userAvatar.innerHTML = `<span class="avatar-iniciales">${iniciales}</span>`;
+                }
+            }
+            
+            if (userEmail) userEmail.textContent = usuarioActual.email;
         }
-        if (indicador) indicador.style.display = 'none';
         
-        if (!document.getElementById('notificacionAdminBtn')) {
+        // Si es admin, ocultar modo lectura
+        if (indicador) indicador.style.display = esAdmin ? 'none' : 'block';
+        
+        // Botón de notificaciones admin
+        if (esAdmin && !document.getElementById('notificacionAdminBtn')) {
             const toolbar = document.querySelector('.admin-toolbar');
             if (toolbar) {
                 const notifBtn = document.createElement('button');
@@ -353,17 +435,30 @@ function actualizarUIporPermisos() {
                 notifBtn.className = 'btn-primary';
                 notifBtn.style.background = '#17a2b8';
                 notifBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar notificación';
-                notifBtn.onclick = mostrarNotificacionSimple;
+                notifBtn.onclick = mostrarPanelMensajes;
                 toolbar.appendChild(notifBtn);
+                
+                // Botón de administrar usuarios
+                const userBtn = document.createElement('button');
+                userBtn.id = 'adminUsersBtn';
+                userBtn.className = 'btn-primary';
+                userBtn.style.background = '#6f42c1';
+                userBtn.innerHTML = '<i class="fas fa-users-cog"></i> Usuarios';
+                userBtn.onclick = mostrarPanelUsuarios;
+                toolbar.appendChild(userBtn);
             }
         }
     } else {
+        // No hay usuario
         if (adminLoginLink) adminLoginLink.style.display = 'inline';
         if (userMenu) userMenu.style.display = 'none';
         if (indicador) indicador.style.display = 'block';
         
         const notifBtn = document.getElementById('notificacionAdminBtn');
         if (notifBtn) notifBtn.remove();
+        
+        const userBtn = document.getElementById('adminUsersBtn');
+        if (userBtn) userBtn.remove();
     }
 }
 
@@ -731,8 +826,7 @@ async function renderizarPanelNotificaciones() {
 // ==================== MODALES ====================
 function abrirModal(titulo, tipo, item = null) {
     if (!esAdmin) {
-        mostrarNotificacion('Debes iniciar sesión como administrador', 'error');
-        mostrarLoginModal();
+        mostrarNotificacion('Solo administradores pueden editar', 'error');
         return;
     }
     
@@ -868,13 +962,171 @@ async function abrirModalRecurso(id = null) {
     }
 }
 
+// ==================== PANEL DE ADMINISTRACIÓN DE USUARIOS ====================
+async function mostrarPanelUsuarios() {
+    if (!esAdmin) return;
+    
+    const usuarios = await obtenerTodosLosUsuarios();
+    
+    // Crear modal si no existe
+    let modal = document.getElementById('adminUsersModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'adminUsersModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 800px;">
+                <span class="close-modal" id="closeUsersModal">&times;</span>
+                <h2><i class="fas fa-users-cog"></i> Administrar Usuarios</h2>
+                <div class="users-list" id="usersList"></div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        document.getElementById('closeUsersModal').onclick = () => {
+            modal.style.display = 'none';
+        };
+    }
+    
+    const usersList = document.getElementById('usersList');
+    let html = `
+        <table style="width:100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f0f0f0;">
+                    <th style="padding:10px; text-align:left;">Usuario</th>
+                    <th style="padding:10px; text-align:left;">Email</th>
+                    <th style="padding:10px; text-align:left;">Rol</th>
+                    <th style="padding:10px; text-align:left;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    usuarios.forEach(user => {
+        const esAdminActual = user.rol === 'admin';
+        html += `
+            <tr style="border-bottom:1px solid #ddd;">
+                <td style="padding:10px;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div class="avatar-small" style="background:${esAdminActual ? '#e67e22' : '#2c3e50'};">
+                            ${user.fotoURL ? 
+                                `<img src="${user.fotoURL}" style="width:30px; height:30px; border-radius:50%;">` : 
+                                `<span>${obtenerIniciales(user.nombre || user.email)}</span>`
+                            }
+                        </div>
+                        ${user.nombre || 'Sin nombre'}
+                    </div>
+                </td>
+                <td style="padding:10px;">${user.email}</td>
+                <td style="padding:10px;">
+                    <span style="background:${esAdminActual ? '#e67e22' : '#6c757d'}; color:white; padding:3px 10px; border-radius:15px; font-size:0.8rem;">
+                        ${esAdminActual ? 'Administrador' : 'Usuario'}
+                    </span>
+                </td>
+                <td style="padding:10px;">
+                    <button class="btn-toggle-role" data-uid="${user.id}" data-role="${user.rol}" style="padding:5px 10px; background:#17a2b8; color:white; border:none; border-radius:5px; cursor:pointer;">
+                        ${esAdminActual ? 'Quitar admin' : 'Hacer admin'}
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    html += `</tbody></table>`;
+    usersList.innerHTML = html;
+    
+    // Agregar eventos a los botones
+    document.querySelectorAll('.btn-toggle-role').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const uid = e.target.dataset.uid;
+            const rolActual = e.target.dataset.role;
+            const nuevoRol = rolActual === 'admin' ? 'usuario' : 'admin';
+            
+            if (confirm(`¿Cambiar rol a ${nuevoRol === 'admin' ? 'Administrador' : 'Usuario'}?`)) {
+                const resultado = await cambiarRolUsuario(uid, nuevoRol);
+                if (resultado.exito) {
+                    mostrarNotificacion('Rol actualizado', 'exito');
+                    mostrarPanelUsuarios(); // Recargar
+                }
+            }
+        });
+    });
+    
+    modal.style.display = 'flex';
+}
+
+// ==================== PANEL DE MENSAJES ====================
+async function mostrarPanelMensajes() {
+    if (!esAdmin) return;
+    
+    const usuarios = await obtenerTodosLosUsuarios();
+    
+    let modal = document.getElementById('mensajesModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'mensajesModal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 500px;">
+                <span class="close-modal" id="closeMensajesModal">&times;</span>
+                <h2><i class="fas fa-paper-plane"></i> Enviar Mensaje</h2>
+                <form id="mensajeForm">
+                    <div class="form-group">
+                        <label>Destinatarios</label>
+                        <select id="mensajeDestinatarios" class="form-control">
+                            <option value="todos">Todos los usuarios</option>
+                            <option value="admins">Solo administradores</option>
+                            <option value="usuarios">Solo usuarios normales</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Asunto</label>
+                        <input type="text" id="mensajeAsunto" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mensaje</label>
+                        <textarea id="mensajeTexto" class="form-control" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary btn-block">
+                        <i class="fas fa-paper-plane"></i> Enviar
+                    </button>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        document.getElementById('closeMensajesModal').onclick = () => {
+            modal.style.display = 'none';
+        };
+        
+        document.getElementById('mensajeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const asunto = document.getElementById('mensajeAsunto').value;
+            const mensaje = document.getElementById('mensajeTexto').value;
+            const destinatarios = document.getElementById('mensajeDestinatarios').value;
+            
+            const resultado = await enviarMensajeAUsuarios(asunto, mensaje, destinatarios);
+            if (resultado.exito) {
+                mostrarNotificacion('Mensaje enviado', 'exito');
+                modal.style.display = 'none';
+            }
+        });
+    }
+    
+    modal.style.display = 'flex';
+}
+
 // ==================== LOGIN MODAL ====================
 function mostrarLoginModal() {
-    document.getElementById('loginModal').style.display = 'flex';
-    document.getElementById('loginEmail').value = '';
-    document.getElementById('loginPassword').value = '';
-    document.getElementById('loginError').style.display = 'none';
-    document.getElementById('loginEmail').focus();
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginPassword').value = '';
+        document.getElementById('loginError').style.display = 'none';
+        document.getElementById('loginEmail').focus();
+    }
 }
 
 function cerrarLoginModal() {
@@ -897,8 +1149,7 @@ document.getElementById('modal-form')?.addEventListener('submit', async (e) => {
     
     if (!esAdmin) {
         cerrarModal();
-        mostrarNotificacion('Debes iniciar sesión como administrador', 'error');
-        mostrarLoginModal();
+        mostrarNotificacion('Solo administradores pueden editar', 'error');
         return;
     }
     
@@ -968,21 +1219,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     auth.onAuthStateChanged(async (user) => {
         if (user) {
             // Usuario logueado
-            const esAdminUser = await esEmailAdministrador(user.email);
+            usuarioActual = user;
             
-            if (esAdminUser) {
-                esAdmin = true;
-                usuarioActual = user;
-                actualizarUIporPermisos();
-                mostrarNotificacion(`Bienvenido ${user.displayName || user.email}`, 'exito');
+            // Verificar rol en Firestore
+            const userDoc = await db.collection('usuarios').doc(user.uid).get();
+            
+            if (userDoc.exists) {
+                esAdmin = userDoc.data().rol === 'admin';
             } else {
-                // Si no es admin, cerramos sesión
-                await auth.signOut();
+                // Si no existe en Firestore, crear registro
+                await db.collection('usuarios').doc(user.uid).set({
+                    nombre: user.displayName,
+                    email: user.email,
+                    fechaRegistro: new Date().toISOString(),
+                    uid: user.uid,
+                    rol: 'usuario',
+                    fotoURL: user.photoURL || null
+                });
                 esAdmin = false;
-                usuarioActual = null;
-                actualizarUIporPermisos();
-                mostrarNotificacion('No tienes permisos de administrador', 'error');
             }
+            
+            actualizarUIporPermisos();
+            
+            const nombre = user.displayName || user.email;
+            mostrarNotificacion(`Bienvenido ${nombre}`, 'exito');
+            
         } else {
             // Usuario no logueado
             esAdmin = false;
@@ -1075,7 +1336,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const email = document.getElementById('registerEmail').value;
         const password = document.getElementById('registerPassword').value;
         const confirmPassword = document.getElementById('registerConfirmPassword').value;
-        const codigo = document.getElementById('registerAdminCode').value;
         
         if (password !== confirmPassword) {
             document.getElementById('registerError').textContent = 'Las contraseñas no coinciden';
@@ -1084,12 +1344,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         
         mostrarCargando(true);
-        const resultado = await registrarAdministrador(email, password, nombre, codigo);
+        const resultado = await registrarUsuario(email, password, nombre);
         mostrarCargando(false);
         
         if (resultado.exito) {
             cerrarRegisterModal();
-            mostrarNotificacion('Registro exitoso. Ya puedes iniciar sesión', 'exito');
+            mostrarNotificacion('Registro exitoso', 'exito');
         } else {
             document.getElementById('registerError').textContent = resultado.error;
             document.getElementById('registerError').style.display = 'block';
